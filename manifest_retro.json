@@ -1,0 +1,12 @@
+{
+  "name": "Retro_Console",
+  "version": "1.0.0",
+  "builds": [
+    {
+      "chipFamily": "ESP32-C3",
+      "parts": [
+        { "path": "retro-console.bin", "offset": 0 }
+      ]
+    }
+  ]
+}
