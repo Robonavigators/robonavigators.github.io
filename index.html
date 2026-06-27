@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firmware Flasher</title>
+    <title>ESP32-C3 Firmware Flasher</title>
     
     <style>
         :root {
-            /* Your custom blue */
             --brand-blue: #0484f8; 
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
@@ -24,62 +23,105 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 2rem;
             box-sizing: border-box;
+        }
+
+        .header-text {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            color: var(--text-main);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .header-text p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Container to hold both cards */
+        .projects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 850px;
+            width: 100%;
         }
 
         .flash-card {
             background: var(--card-bg);
-            padding: 3rem 2.5rem;
+            padding: 2.5rem 2rem;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             text-align: center;
-            max-width: 420px;
-            width: 100%;
         }
 
-        h1 {
-            font-size: 1.5rem;
+        .flash-card h2 {
+            font-size: 1.35rem;
             color: var(--text-main);
             margin-top: 0;
             margin-bottom: 0.75rem;
             font-weight: 600;
         }
 
-        p {
+        .flash-card p {
             color: var(--text-muted);
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             font-size: 0.95rem;
             line-height: 1.5;
+            flex-grow: 1; /* Pushes the button to the bottom evenly */
         }
 
-        /* Customizing the ESP Web Tools Button to match your brand */
         esp-web-install-button {
             --esp-web-install-button-color: var(--brand-blue);
             --esp-web-install-button-text-color: #ffffff;
             --esp-web-install-button-border-radius: 8px;
+            margin-top: auto; 
         }
         
         .footer-note {
-            margin-top: 2rem;
+            margin-top: 3rem;
             font-size: 0.85rem;
             color: var(--text-muted);
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div class="flash-card">
-        <h1>Hardware Flasher</h1>
-        <p>Connect your ESP32 or Xiao microcontroller via USB to install the latest firmware for your robotics and display projects.</p>
+    <div class="header-text">
+        <h1>ESP32-C3 Zero Installer</h1>
+        <p>Select the firmware you want to install on your board.</p>
+    </div>
+
+    <div class="projects-container">
         
-        <!-- The Web Serial button points to your manifest -->
-        <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+        <!-- Retro Console Card -->
+        <div class="flash-card">
+            <h2>Retro Console</h2>
+            <p>Installs the Retro Console project. Ensure your ESP32-C3 is connected via USB before starting.</p>
+            <esp-web-install-button manifest="manifest_retro.json"></esp-web-install-button>
+        </div>
+
+        <!-- Desk Buddy Card -->
+        <div class="flash-card">
+            <h2>Desk Buddy</h2>
+            <p>Installs the interactive Desk Buddy project. Ensure your ESP32-C3 is connected via USB before starting.</p>
+            <esp-web-install-button manifest="manifest_desk.json"></esp-web-install-button>
+        </div>
+
     </div>
     
     <div class="footer-note">
-        Note: Requires a Chromium-based browser (Chrome, Edge, or Brave).
+        Note: Requires a Chromium-based browser (Chrome, Edge, or Brave). Make sure the Arduino IDE or serial monitor is closed before flashing.
     </div>
 
     <!-- Load the ESP Web Tools script -->
