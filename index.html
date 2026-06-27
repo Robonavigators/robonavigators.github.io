@@ -202,7 +202,7 @@
                     <h2 id="fwTitle">Retro_Console</h2>
                     <p id="fwDesc">Installs the core Retro Console firmware. Ensure your ESP32-C3 is connected and the Arduino IDE is closed.</p>
                     <ul id="fwFeatures">
-                        <li>Optimized for 1.3inch SH1106 OLED</li>
+                        <li>Optimized for full white 1.3inch SH1106 OLED</li>
                         <li>Mimics old retro consoles</li>
                         <li>Uses modern features</li>
                     </ul>
@@ -226,9 +226,9 @@
                 title: "Retro Console",
                 desc: "Installs the core Retro Console firmware. Ensure your ESP32-C3 is connected and the Arduino IDE is closed.",
                 features: [
-                        "Optimized for 1.3inch SH1106 OLED"
-                        "Mimics old retro consoles"
-                        "Uses modern features"
+                    "Optimized for full white 1.3inch SH1106 OLED",
+                    "Mimics old retro consoles",
+                    "Uses modern features"
                 ]
             },
             {
@@ -238,7 +238,7 @@
                 features: [
                     "Expressive eye animations",
                     "Weather data using Open Weather Map",
-                    "Optimized for 0.96inch SSD1306 OLED"
+                    "Optimized for full white 0.96inch SSD1306 OLED"
                 ]
             }
         ];
@@ -265,7 +265,7 @@
             });
         }
 
-        // --- NEW: Dynamic Local File Upload Logic ---
+        // --- Dynamic Local File Upload Logic ---
         document.getElementById('customFileInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -279,9 +279,9 @@
                 version: "Local Upload",
                 builds: [
                     {
-                        chipFamily: "ESP32-C3", // Targeting your specific board
+                        chipFamily: "ESP32-C3", 
                         parts: [
-                            { path: binUrl, offset: 0 } // Offset 0 is standard for Arduino 'merged.bin'
+                            { path: binUrl, offset: 0 } 
                         ]
                     }
                 ]
