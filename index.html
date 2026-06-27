@@ -273,25 +273,37 @@
             // 1. Create a local temporary URL for the .bin file
             const binUrl = URL.createObjectURL(file);
 
-            // 2. Create a dynamic manifest on the fly
+            // 2. Define all chip families supported by ESP Web Tools
+            const supportedChips = [
+                "ESP8266", 
+                "ESP32", 
+                "ESP32-S2", 
+                "ESP32-S3", 
+                "ESP32-C2", 
+                "ESP32-C3", 
+                "ESP32-C6", 
+                "ESP32-H2",
+                "ESP32-P4"
+            ];
+
+            // 3. Create a dynamic manifest that pre-approves every chip
             const customManifest = {
                 name: file.name,
                 version: "Local Upload",
-                builds: [
-                    {
-                        chipFamily: "ESP32-C3", 
-                        parts: [
-                            { path: binUrl, offset: 0 } 
-                        ]
-                    }
-                ]
+                // This creates a build configuration for EVERY chip in the array above
+                builds: supportedChips.map(chip => ({
+                    chipFamily: chip,
+                    parts: [
+                        { path: binUrl, offset: 0 }
+                    ]
+                }))
             };
 
-            // 3. Convert that manifest into a temporary URL
+            // 4. Convert that manifest into a temporary URL
             const manifestBlob = new Blob([JSON.stringify(customManifest)], { type: 'application/json' });
             const manifestUrl = URL.createObjectURL(manifestBlob);
 
-            // 4. Add this as a new project in your array
+            // 5. Add this as a new project in your array
             const customIndex = firmwareData.length;
             firmwareData.push({
                 manifest: manifestUrl,
@@ -300,11 +312,11 @@
                 features: [
                     "Local file upload via browser memory",
                     "Flashed at offset 0x00",
-                    "Requires ESP32-C3 merged.bin"
+                    "Compatible with any merged ESP binary"
                 ]
             });
 
-            // 5. Create a new visual card in the UI
+            // 6. Create a new visual card in the UI
             const row = document.getElementById('firmwareRow');
             const newBtn = document.createElement('div');
             newBtn.className = 'fw';
@@ -315,7 +327,7 @@
             `;
             row.appendChild(newBtn);
 
-            // 6. Automatically select it for the user
+            // 7. Automatically select it for the user
             selectFW(customIndex, newBtn);
             
             // Clear the file input so they can select another file later if needed
