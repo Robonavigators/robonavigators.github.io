@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firmware Flasher</title>
+    
+    <style>
+        :root {
+            /* Your custom blue */
+            --brand-blue: #0484f8; 
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .flash-card {
+            background: var(--card-bg);
+            padding: 3rem 2.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Customizing the ESP Web Tools Button to match your brand */
+        esp-web-install-button {
+            --esp-web-install-button-color: var(--brand-blue);
+            --esp-web-install-button-text-color: #ffffff;
+            --esp-web-install-button-border-radius: 8px;
+        }
+        
+        .footer-note {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flash-card">
+        <h1>Hardware Flasher</h1>
+        <p>Connect your ESP32 or Xiao microcontroller via USB to install the latest firmware for your robotics and display projects.</p>
+        
+        <!-- The Web Serial button points to your manifest -->
+        <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+    </div>
+    
+    <div class="footer-note">
+        Note: Requires a Chromium-based browser (Chrome, Edge, or Brave).
+    </div>
+
+    <!-- Load the ESP Web Tools script -->
+    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+
+</body>
+</html>
