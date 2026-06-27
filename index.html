@@ -137,6 +137,7 @@
             color: #475569;
             line-height: 1.6;
             margin-bottom: 15px;
+            word-wrap: break-word; /* Prevents long file names from breaking layout */
         }
 
         .info-text ul {
@@ -179,31 +180,31 @@
 
             <div class="header">
                 <div>
-                    <div class="title">Robonavigators ESP32-C3 Flasher</div>
+                    <div class="title">Robonavigators ESP Flasher</div>
                     <div class="subtitle">Select a project to flash directly via USB</div>
                 </div>
             </div>
 
-            <div class="firmware-row">
+            <div class="firmware-row" id="firmwareRow">
                 <div class="fw active" onclick="selectFW(0, this)">
-                    <div class="fw-title">🎮 Retro Console</div>
-                    <div class="fw-desc">ESP32-C3 Zero</div>
+                    <div class="fw-title">Retro_Console</div>
+                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
                 </div>
 
                 <div class="fw" onclick="selectFW(1, this)">
-                    <div class="fw-title">🤖 Desk Buddy</div>
-                    <div class="fw-desc">ESP32-C3 Zero</div>
+                    <div class="fw-title">Desk_Buddy</div>
+                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
                 </div>
             </div>
 
             <div class="info-panel">
                 <div class="info-text">
-                    <h2 id="fwTitle">Retro Console</h2>
+                    <h2 id="fwTitle">Retro_Console</h2>
                     <p id="fwDesc">Installs the core Retro Console firmware. Ensure your ESP32-C3 is connected and the Arduino IDE is closed.</p>
                     <ul id="fwFeatures">
-                        <li>Optimized for full white SSD1306 OLED</li>
-                        <li>High refresh rate interface</li>
-                        <li>Plug-and-play setup</li>
+                        <li>Optimized for 1.3inch SH1106 OLED</li>
+                        <li>Mimics old retro consoles</li>
+                        <li>Uses modern features</li>
                     </ul>
                 </div>
             </div>
@@ -211,7 +212,7 @@
             <esp-web-install-button id="installBtn" manifest="manifest_retro.json"></esp-web-install-button>
 
             <div class="footer">
-                Chrome, Edge, or Brave browser required • Flash at your own risk
+                Chrome, Edge browser required • Flash at your own risk
             </div>
 
         </div>
@@ -225,19 +226,19 @@
                 title: "Retro Console",
                 desc: "Installs the core Retro Console firmware. Ensure your ESP32-C3 is connected and the Arduino IDE is closed.",
                 features: [
-                    "Optimized for full white SSD1306 OLED",
-                    "High refresh rate interface",
-                    "Plug-and-play setup"
+                        "Optimized for 1.3inch SH1106 OLED"
+                        "Mimics old retro consoles"
+                        "Uses modern features"
                 ]
             },
             {
                 manifest: "manifest_desk.json",
-                title: "Desk Buddy",
+                title: "Desk_Buddy",
                 desc: "Installs the interactive Desk Buddy firmware. Turns your board into an interactive companion.",
                 features: [
                     "Expressive eye animations",
-                    "Ultrasonic sensor integration",
-                    "Human presence detection"
+                    "Weather data using Open Weather Map",
+                    "Optimized for 0.96inch SSD1306 OLED"
                 ]
             }
         ];
@@ -264,12 +265,61 @@
             });
         }
 
-        // Custom bin button alert
+        // --- NEW: Dynamic Local File Upload Logic ---
         document.getElementById('customFileInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
-            if (file) {
-                alert("File selected: " + file.name + "\n\nNote: Custom JavaScript using esptool-js is required to actually flash this local file.");
-            }
+            if (!file) return;
+
+            // 1. Create a local temporary URL for the .bin file
+            const binUrl = URL.createObjectURL(file);
+
+            // 2. Create a dynamic manifest on the fly
+            const customManifest = {
+                name: file.name,
+                version: "Local Upload",
+                builds: [
+                    {
+                        chipFamily: "ESP32-C3", // Targeting your specific board
+                        parts: [
+                            { path: binUrl, offset: 0 } // Offset 0 is standard for Arduino 'merged.bin'
+                        ]
+                    }
+                ]
+            };
+
+            // 3. Convert that manifest into a temporary URL
+            const manifestBlob = new Blob([JSON.stringify(customManifest)], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+
+            // 4. Add this as a new project in your array
+            const customIndex = firmwareData.length;
+            firmwareData.push({
+                manifest: manifestUrl,
+                title: "Custom Firmware",
+                desc: `Ready to flash: ${file.name}`,
+                features: [
+                    "Local file upload via browser memory",
+                    "Flashed at offset 0x00",
+                    "Requires ESP32-C3 merged.bin"
+                ]
+            });
+
+            // 5. Create a new visual card in the UI
+            const row = document.getElementById('firmwareRow');
+            const newBtn = document.createElement('div');
+            newBtn.className = 'fw';
+            newBtn.onclick = function() { selectFW(customIndex, this) };
+            newBtn.innerHTML = `
+                <div class="fw-title">📁 Custom .bin</div>
+                <div class="fw-desc">Local Upload</div>
+            `;
+            row.appendChild(newBtn);
+
+            // 6. Automatically select it for the user
+            selectFW(customIndex, newBtn);
+            
+            // Clear the file input so they can select another file later if needed
+            event.target.value = '';
         });
     </script>
 
