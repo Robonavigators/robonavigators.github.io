@@ -191,11 +191,23 @@
             text-align: center;
         }
 
+        /* --- Footer & Main GitHub Link --- */
         .footer {
             margin-top: 20px;
             font-size: 12px;
             color: #94a3b8;
             text-align: center;
+            line-height: 1.8;
+        }
+
+        .footer a {
+            color: #64748b;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            color: var(--brand-blue);
         }
     </style>
 </head>
@@ -251,7 +263,8 @@
             </div>
 
             <div class="footer">
-                Chrome, Edge browser required • Flash at your own risk
+                Chrome, Edge browser required • Flash at your own risk <br>
+                For more general information visit the <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>
             </div>
 
         </div>
@@ -309,7 +322,6 @@
                 repoLinkDiv.style.display = "block";
                 repoLinkDiv.innerHTML = `For more information visit <a href="${fw.repoLink}" target="_blank">${fw.repoName}</a>`;
             } else {
-                // Hides the link entirely for Custom .bin uploads
                 repoLinkDiv.style.display = "none";
             }
         }
@@ -353,7 +365,6 @@
                     "Flashed at offset 0x00",
                     "Universal board support (Auto-detected)"
                 ],
-                // No repo link for custom uploads
                 repoName: null, 
                 repoLink: null 
             });
