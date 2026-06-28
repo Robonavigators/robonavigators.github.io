@@ -13,7 +13,7 @@ Welcome to the official deployment hub for Robonavigators hardware. This reposit
 ### 1. Web Serial Flasher
 A browser-based tool to flash pre-compiled firmware or your own custom `.bin` files directly to your board over USB.
 * **Technology:** Web Serial API
-* **Supported Devices:** ESP8266, ESP32, ESP32-S2/S3, ESP32-C2/C3/C6, ESP32-H2, ESP32-P4.
+* **Supported Devices:** ESP8266, ESP32, ESP32-S2/S3, ESP32-C2/C3/C5/C6, ESP32-H2, ESP32-P4.
 
 ### 2. Erase Flash Memory
 A utility tool to completely wipe the flash memory of your board.
