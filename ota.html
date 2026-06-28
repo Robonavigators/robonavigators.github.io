@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robonavigators OTA Uploader</title>
+
+    <style>
+        :root {
+            --brand-blue: #0484f8; 
+            --brand-blue-light: #e6f2ff;
+            --brand-emerald: #10b981;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            width: 900px;
+            max-width: 95%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Firmware selection cards */
+        .firmware-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .fw {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .fw:hover {
+            border-color: #cbd5e1;
+        }
+
+        .fw.active {
+            border-color: var(--brand-emerald); /* Changed to emerald for OTA vibe */
+            background: #ecfdf5;
+        }
+
+        .fw-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .fw-desc {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Info panel */
+        .info-panel {
+            margin-bottom: 25px;
+            background: #f8fafc;
+            padding: 20px 25px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .info-text h2 {
+            margin: 0 0 10px 0;
+            color: #1e293b;
+            font-size: 20px;
+        }
+
+        .info-text p {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
+
+        .info-text ul {
+            font-size: 13px;
+            color: #475569;
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        .info-text li {
+            margin-bottom: 6px;
+        }
+
+        /* --- OTA Action Area --- */
+        .ota-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #ffffff;
+        }
+
+        .ip-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+            font-family: inherit;
+        }
+
+        .ip-input:focus {
+            outline: none;
+            border-color: var(--brand-emerald);
+        }
+
+        .ota-upload-btn {
+            background-color: var(--brand-emerald);
+            color: white;
+            padding: 14px 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: block;
+        }
+
+        .ota-upload-btn:hover {
+            background-color: #059669;
+        }
+
+        .ota-upload-btn input[type="file"] {
+            display: none;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+
+        .status-success { color: #10b981; }
+        .status-error { color: #ef4444; }
+        .status-loading { color: #f59e0b; }
+        /* ----------------------- */
+
+        /* Warning Note */
+        .warning-note {
+            margin-top: 25px;
+            font-size: 13px;
+            color: #d97706;
+            background-color: #fffbeb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #fef3c7;
+            text-align: center;
+        }
+
+        /* Repo Link */
+        .repo-link {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+            color: #475569;
+        }
+        
+        .repo-link a {
+            color: var(--brand-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .repo-link a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+
+            <div class="header">
+                <div>
+                    <div class="title">Robonavigators OTA Uploader</div>
+                    <div class="subtitle">Update your board wirelessly over your local network</div>
+                </div>
+            </div>
+
+            <div class="firmware-row" id="firmwareRow">
+                <div class="fw active" onclick="selectFW(0, this)">
+                    <div class="fw-title">Retro_Console</div>
+                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
+                </div>
+
+                <div class="fw" onclick="selectFW(1, this)">
+                    <div class="fw-title">Desk_Buddy</div>
+                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <div class="info-text">
+                    <h2 id="fwTitle">Retro_Console</h2>
+                    <p id="fwDesc">This project supports Over-The-Air updates. Ensure your device is powered on, connected to your Wi-Fi, and you know its local IP address.</p>
+                    <ul id="fwFeatures">
+                        <li>Optimized for full white 1.3inch SH1106 OLED</li>
+                        <li>Mimics old retro consoles</li>
+                        <li>Uses modern features</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ota-controls">
+                <input type="text" id="espIpAddress" class="ip-input" placeholder="Enter device IP address (e.g., 192.168.1.100)">
+                
+                <label class="ota-upload-btn">
+                    Select Compiled .bin & Update
+                    <input type="file" accept=".bin" id="otaFileInput">
+                </label>
+
+                <div id="statusMessage" class="status-message"></div>
+            </div>
+
+            <div class="warning-note">
+                <strong>Note:</strong> Your computer and the ESP32 must be connected to the same Wi-Fi network for OTA to work.
+            </div>
+
+            <div class="repo-link">
+                For more information visit <a href="https://github.com/Robonavigators" target="_blank">Robonavigators Github</a>
+            </div>
+
+            <div class="footer">
+                Ensure OTA routing is enabled in your device firmware
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const firmwareData = [
+            {
+                title: "Retro Console",
+                desc: "This project supports Over-The-Air updates. Ensure your device is powered on, connected to your Wi-Fi, and you know its local IP address.",
+                features: [
+                    "Optimized for full white 1.3inch SH1106 OLED",
+                    "Mimics old retro consoles",
+                    "Uses modern features"
+                ]
+            },
+            {
+                title: "Desk_Buddy",
+                desc: "Update your Desk Buddy wirelessly. Make sure the current firmware running on the board has the AsyncOTA server initialized.",
+                features: [
+                    "Expressive eye animations",
+                    "Weather data using Open Weather Map",
+                    "Optimized for full white 0.96inch SSD1306 OLED"
+                ]
+            }
+        ];
+
+        function selectFW(index, el) {
+            document.querySelectorAll('.fw').forEach(f => f.classList.remove('active'));
+            el.classList.add('active');
+
+            const fw = firmwareData[index];
+
+            document.getElementById("fwTitle").innerText = fw.title;
+            document.getElementById("fwDesc").innerText = fw.desc;
+
+            const ul = document.getElementById("fwFeatures");
+            ul.innerHTML = "";
+            fw.features.forEach(f => {
+                const li = document.createElement("li");
+                li.innerText = f;
+                ul.appendChild(li);
+            });
+        }
+
+        // --- OTA Upload Logic ---
+        document.getElementById('otaFileInput').addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            const ipAddress = document.getElementById('espIpAddress').value.trim();
+            const statusDiv = document.getElementById('statusMessage');
+            
+            if (!file) return;
+
+            if (!ipAddress) {
+                showStatus('Please enter the ESP IP Address first.', 'status-error');
+                event.target.value = ''; // Reset file input
+                return;
+            }
+
+            // Standard HTTP format for local IP
+            const formattedIp = ipAddress.startsWith('http') ? ipAddress : `http://${ipAddress}`;
+            // Standard route for ESP32 WebServer updates is usually /update
+            const updateUrl = `${formattedIp}/update`;
+
+            const formData = new FormData();
+            formData.append('update', file); // 'update' is the standard key expected by ESP OTA handlers
+
+            showStatus(`Uploading ${file.name} to ${formattedIp}... Please wait.`, 'status-loading');
+
+            try {
+                const response = await fetch(updateUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showStatus('Update Successful! Your board is rebooting.', 'status-success');
+                } else {
+                    showStatus(`Update Failed: Board returned status ${response.status}`, 'status-error');
+                }
+            } catch (error) {
+                showStatus(`Connection Error: Make sure the IP is correct and the board is online.`, 'status-error');
+                console.error("OTA Error:", error);
+            }
+
+            // Clear the file input so it can be used again
+            event.target.value = '';
+        });
+
+        function showStatus(message, className) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.style.display = 'block';
+            statusDiv.className = `status-message ${className}`;
+            statusDiv.innerText = message;
+        }
+    </script>
+
+</body>
+</html>
