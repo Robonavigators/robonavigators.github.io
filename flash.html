@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robonavigators ESP Flasher</title>
+
+    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+
+    <style>
+        :root {
+            --brand-blue: #0484f8; 
+            --brand-blue-light: #e6f2ff;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* --- Custom .Bin Button --- */
+        .custom-bin-upload {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            border: 2px solid #ef4444; 
+            background-color: transparent;
+            color: #ef4444;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .custom-bin-upload:hover {
+            background-color: #ef4444;
+            color: #ffffff;
+        }
+
+        .custom-bin-upload input[type="file"] {
+            display: none;
+        }
+        /* -------------------------- */
+
+        .container {
+            width: 900px;
+            max-width: 95%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Firmware selection cards */
+        .firmware-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .fw {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .fw:hover {
+            border-color: #cbd5e1;
+        }
+
+        .fw.active {
+            border-color: var(--brand-blue);
+            background: var(--brand-blue-light);
+        }
+
+        .fw-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .fw-desc {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Info panel */
+        .info-panel {
+            margin-bottom: 25px;
+            background: #f8fafc;
+            padding: 20px 25px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .info-text h2 {
+            margin: 0 0 10px 0;
+            color: #1e293b;
+            font-size: 20px;
+        }
+
+        .info-text p {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
+
+        .info-text ul {
+            font-size: 13px;
+            color: #475569;
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        .info-text li {
+            margin-bottom: 6px;
+        }
+
+        /* Install button */
+        esp-web-install-button {
+            --esp-web-install-button-color: var(--brand-blue);
+            --esp-web-install-button-text-color: #ffffff;
+            --esp-web-install-button-border-radius: 10px;
+            width: 100%;
+            display: block;
+        }
+
+        /* Warning Note */
+        .warning-note {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #d97706;
+            background-color: #fffbeb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #fef3c7;
+            text-align: center;
+        }
+
+        /* --- NEW: Repo Link --- */
+        .repo-link {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+            color: #475569;
+        }
+        
+        .repo-link a {
+            color: var(--brand-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .repo-link a:hover {
+            text-decoration: underline;
+        }
+        /* ---------------------- */
+
+        .footer {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <label class="custom-bin-upload">
+        Add your own .bin
+        <input type="file" accept=".bin" id="customFileInput">
+    </label>
+
+    <div class="container">
+        <div class="card">
+
+            <div class="header">
+                <div>
+                    <div class="title">Robonavigators ESP Flasher</div>
+                    <div class="subtitle">Select a project to flash directly via USB</div>
+                </div>
+            </div>
+
+            <div class="firmware-row" id="firmwareRow">
+                <div class="fw active" onclick="selectFW(0, this)">
+                    <div class="fw-title">Retro_Console</div>
+                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
+                </div>
+
+                <div class="fw" onclick="selectFW(1, this)">
+                    <div class="fw-title">Desk_Buddy</div>
+                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <div class="info-text">
+                    <h2 id="fwTitle">Retro_Console</h2>
+                    <p id="fwDesc">Installs the core Retro Console firmware. Ensure your ESP32-C3 is connected and the Arduino IDE is closed.</p>
+                    <ul id="fwFeatures">
+                        <li>Optimized for full white 1.3inch SH1106 OLED</li>
+                        <li>Mimics old retro consoles</li>
+                        <li>Uses modern features</li>
+                    </ul>
+                </div>
+            </div>
+
+            <esp-web-install-button id="installBtn" manifest="manifest_retro.json"></esp-web-install-button>
+
+            <div class="warning-note">
+                <strong>Note:</strong> Make sure the board is connected properly and make sure any serial port requiring application or websites is closed.
+            </div>
+
+            <div class="repo-link">
+                For more information visit <a href="https://github.com/Robonavigators/Retro_Console_ESP32-C3-Zero" target="_blank">Robonavigators/Retro_Console_ESP32-C3-Zero</a>
+            </div>
+
+            <div class="footer">
+                Chrome, Edge browser required • Flash at your own risk
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const firmwareData = [
+            {
+                manifest: "manifest_retro.json",
+                title: "Retro Console",
+                desc: "Installs the core Retro Console firmware. Ensure your ESP32-C3 is connected and the Arduino IDE is closed.",
+                features: [
+                    "Optimized for full white 1.3inch SH1106 OLED",
+                    "Mimics old retro consoles",
+                    "Uses modern features"
+                ]
+            },
+            {
+                manifest: "manifest_desk.json",
+                title: "Desk_Buddy",
+                desc: "Installs the interactive Desk Buddy firmware. Turns your board into an interactive companion.",
+                features: [
+                    "Expressive eye animations",
+                    "Weather data using Open Weather Map",
+                    "Optimized for full white 0.96inch SSD1306 OLED"
+                ]
+            }
+        ];
+
+        function selectFW(index, el) {
+            document.querySelectorAll('.fw').forEach(f => f.classList.remove('active'));
+            el.classList.add('active');
+
+            const fw = firmwareData[index];
+
+            document.getElementById("installBtn").setAttribute("manifest", fw.manifest);
+            document.getElementById("fwTitle").innerText = fw.title;
+            document.getElementById("fwDesc").innerText = fw.desc;
+
+            const ul = document.getElementById("fwFeatures");
+            ul.innerHTML = "";
+            fw.features.forEach(f => {
+                const li = document.createElement("li");
+                li.innerText = f;
+                ul.appendChild(li);
+            });
+        }
+
+        // --- Dynamic Local File Upload Logic ---
+        document.getElementById('customFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const binUrl = URL.createObjectURL(file);
+
+            const customManifest = {
+                name: file.name,
+                version: "Local Upload",
+                builds: [
+                    {
+                        chipFamily: "ESP32-C3", 
+                        parts: [
+                            { path: binUrl, offset: 0 } 
+                        ]
+                    }
+                ]
+            };
+
+            const manifestBlob = new Blob([JSON.stringify(customManifest)], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+
+            const customIndex = firmwareData.length;
+            firmwareData.push({
+                manifest: manifestUrl,
+                title: "Custom Firmware",
+                desc: `Ready to flash: ${file.name}`,
+                features: [
+                    "Local file upload via browser memory",
+                    "Flashed at offset 0x00",
+                    "Requires ESP32-C3 merged.bin"
+                ]
+            });
+
+            const row = document.getElementById('firmwareRow');
+            const newBtn = document.createElement('div');
+            newBtn.className = 'fw';
+            newBtn.onclick = function() { selectFW(customIndex, this) };
+            newBtn.innerHTML = `
+                <div class="fw-title">📁 Custom .bin</div>
+                <div class="fw-desc">Local Upload</div>
+            `;
+            row.appendChild(newBtn);
+
+            selectFW(customIndex, newBtn);
+            event.target.value = '';
+        });
+    </script>
+
+</body>
+</html>
