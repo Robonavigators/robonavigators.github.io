@@ -8,7 +8,6 @@
     <style>
         :root {
             --brand-blue: #0484f8; 
-            --brand-blue-light: #e6f2ff;
             --brand-emerald: #10b981;
         }
 
@@ -24,7 +23,7 @@
         }
 
         .container {
-            width: 900px;
+            width: 700px; /* Narrowed slightly since we removed the wide cards */
             max-width: 95%;
         }
 
@@ -46,81 +45,13 @@
             font-size: 24px;
             font-weight: 600;
             color: #1e293b;
+            margin-bottom: 4px;
         }
 
         .subtitle {
             font-size: 14px;
             color: #64748b;
-        }
-
-        /* Firmware selection cards */
-        .firmware-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .fw {
-            flex: 1;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .fw:hover {
-            border-color: #cbd5e1;
-        }
-
-        .fw.active {
-            border-color: var(--brand-emerald); /* Changed to emerald for OTA vibe */
-            background: #ecfdf5;
-        }
-
-        .fw-title {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-
-        .fw-desc {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        /* Info panel */
-        .info-panel {
-            margin-bottom: 25px;
-            background: #f8fafc;
-            padding: 20px 25px;
-            border-radius: 12px;
-            border: 1px solid #f1f5f9;
-        }
-
-        .info-text h2 {
-            margin: 0 0 10px 0;
-            color: #1e293b;
-            font-size: 20px;
-        }
-
-        .info-text p {
-            font-size: 14px;
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            word-wrap: break-word;
-        }
-
-        .info-text ul {
-            font-size: 13px;
-            color: #475569;
-            padding-left: 20px;
-            margin: 0;
-        }
-        
-        .info-text li {
-            margin-bottom: 6px;
+            line-height: 1.5;
         }
 
         /* --- OTA Action Area --- */
@@ -129,6 +60,7 @@
             flex-direction: column;
             gap: 15px;
             background: #ffffff;
+            margin-bottom: 20px;
         }
 
         .ip-input {
@@ -174,16 +106,18 @@
             font-weight: 500;
             text-align: center;
             display: none;
+            padding: 10px;
+            border-radius: 8px;
         }
 
-        .status-success { color: #10b981; }
-        .status-error { color: #ef4444; }
-        .status-loading { color: #f59e0b; }
+        .status-success { color: #065f46; background-color: #d1fae5; border: 1px solid #a7f3d0; }
+        .status-error { color: #991b1b; background-color: #fee2e2; border: 1px solid #fecaca; }
+        .status-loading { color: #92400e; background-color: #fef3c7; border: 1px solid #fde68a; }
         /* ----------------------- */
 
         /* Warning Note */
         .warning-note {
-            margin-top: 25px;
+            margin-top: 15px;
             font-size: 13px;
             color: #d97706;
             background-color: #fffbeb;
@@ -227,31 +161,7 @@
             <div class="header">
                 <div>
                     <div class="title">Robonavigators OTA Uploader</div>
-                    <div class="subtitle">Update your board wirelessly over your local network</div>
-                </div>
-            </div>
-
-            <div class="firmware-row" id="firmwareRow">
-                <div class="fw active" onclick="selectFW(0, this)">
-                    <div class="fw-title">Retro_Console</div>
-                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
-                </div>
-
-                <div class="fw" onclick="selectFW(1, this)">
-                    <div class="fw-title">Desk_Buddy</div>
-                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
-                </div>
-            </div>
-
-            <div class="info-panel">
-                <div class="info-text">
-                    <h2 id="fwTitle">Retro_Console</h2>
-                    <p id="fwDesc">This project supports Over-The-Air updates. Ensure your device is powered on, connected to your Wi-Fi, and you know its local IP address.</p>
-                    <ul id="fwFeatures">
-                        <li>Optimized for full white 1.3inch SH1106 OLED</li>
-                        <li>Mimics old retro consoles</li>
-                        <li>Uses modern features</li>
-                    </ul>
+                    <div class="subtitle">Upload a compiled <strong>.bin</strong> file to your board wirelessly over your local network. Your device must already be running firmware with an active OTA web server.</div>
                 </div>
             </div>
 
@@ -275,57 +185,17 @@
             </div>
 
             <div class="footer">
-                Ensure OTA routing is enabled in your device firmware
+                Ensure OTA routing (usually /update) is enabled in your device firmware
             </div>
 
         </div>
     </div>
 
     <script>
-        const firmwareData = [
-            {
-                title: "Retro Console",
-                desc: "This project supports Over-The-Air updates. Ensure your device is powered on, connected to your Wi-Fi, and you know its local IP address.",
-                features: [
-                    "Optimized for full white 1.3inch SH1106 OLED",
-                    "Mimics old retro consoles",
-                    "Uses modern features"
-                ]
-            },
-            {
-                title: "Desk_Buddy",
-                desc: "Update your Desk Buddy wirelessly. Make sure the current firmware running on the board has the AsyncOTA server initialized.",
-                features: [
-                    "Expressive eye animations",
-                    "Weather data using Open Weather Map",
-                    "Optimized for full white 0.96inch SSD1306 OLED"
-                ]
-            }
-        ];
-
-        function selectFW(index, el) {
-            document.querySelectorAll('.fw').forEach(f => f.classList.remove('active'));
-            el.classList.add('active');
-
-            const fw = firmwareData[index];
-
-            document.getElementById("fwTitle").innerText = fw.title;
-            document.getElementById("fwDesc").innerText = fw.desc;
-
-            const ul = document.getElementById("fwFeatures");
-            ul.innerHTML = "";
-            fw.features.forEach(f => {
-                const li = document.createElement("li");
-                li.innerText = f;
-                ul.appendChild(li);
-            });
-        }
-
         // --- OTA Upload Logic ---
         document.getElementById('otaFileInput').addEventListener('change', async function(event) {
             const file = event.target.files[0];
             const ipAddress = document.getElementById('espIpAddress').value.trim();
-            const statusDiv = document.getElementById('statusMessage');
             
             if (!file) return;
 
@@ -346,6 +216,7 @@
             showStatus(`Uploading ${file.name} to ${formattedIp}... Please wait.`, 'status-loading');
 
             try {
+                // Remove no-cors to allow reading the response status if the ESP32 handles CORS properly.
                 const response = await fetch(updateUrl, {
                     method: 'POST',
                     body: formData
