@@ -98,7 +98,7 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Baud Rate</label>
-                            <select class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-300 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 transition-colors appearance-none">
+                            <select id="baudRate" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-300 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 transition-colors appearance-none">
                                 <option value="115200">115200</option>
                                 <option value="460800">460800</option>
                                 <option value="921600" selected>921600 (Fast)</option>
@@ -149,16 +149,18 @@
             htmlElement.classList.toggle('dark');
         });
 
-        // Mock Serial Logic (UI Demonstration purposes)
+        // Serial Logic
         const connectBtn = document.getElementById('connectBtn');
         const terminal = document.getElementById('terminal');
         const clearLogBtn = document.getElementById('clearLogBtn');
+        const baudRateSelect = document.getElementById('baudRate');
+        
         let isConnecting = false;
+        let activePort = null;
 
         function logToTerminal(message, type = 'info') {
             const line = document.createElement('div');
             
-            // Format timestamp
             const now = new Date();
             const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
             
@@ -178,26 +180,47 @@
             logToTerminal('Logs cleared.', 'system');
         });
 
+        // Set button to loading state
+        function setButtonLoading(loading) {
+            if (loading) {
+                connectBtn.disabled = true;
+                connectBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Connecting...`;
+                connectBtn.classList.replace('bg-red-600', 'bg-zinc-600');
+                connectBtn.classList.remove('hover:bg-red-700');
+            } else {
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h8"/><path d="M12 8v8"/><path d="M12 3a9 9 0 0 0-9 9c0 4.97 4 9 9 9s9-4.03 9-9a9 9 0 0 0-9-9Z"/></svg> Connect & Erase`;
+                connectBtn.classList.replace('bg-zinc-600', 'bg-red-600');
+                connectBtn.classList.add('hover:bg-red-700');
+            }
+        }
+
         connectBtn.addEventListener('click', async () => {
             if (isConnecting) return;
             
+            // Check if browser supports Web Serial
+            if (!("serial" in navigator)) {
+                logToTerminal("Error: Your browser does not support the Web Serial API. Please use Chrome, Edge, or Opera.", "error");
+                return;
+            }
+
             isConnecting = true;
-            connectBtn.disabled = true;
-            connectBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Connecting...`;
-            connectBtn.classList.replace('bg-red-600', 'bg-zinc-600');
-            connectBtn.classList.remove('hover:bg-red-700');
+            setButtonLoading(true);
+            logToTerminal('Requesting serial port...', 'system');
 
             try {
-                // Simulate browser serial permission popup delay
-                logToTerminal('Requesting serial port...', 'system');
-                await new Promise(r => setTimeout(r, 1000));
+                // Actually prompt the user to select a COM port
+                activePort = await navigator.serial.requestPort();
                 
-                logToTerminal('Port selected: COM3 (Mocked)');
+                // Get selected baud rate
+                const baudRate = parseInt(baudRateSelect.value);
+                logToTerminal(`Port selected successfully. Target baud rate: ${baudRate}`);
                 logToTerminal('Connecting to ESP32...', 'system');
+                
+                // Wait briefly for effect
                 await new Promise(r => setTimeout(r, 800));
                 
-                logToTerminal('Chip type: ESP32-WROOM-32');
-                logToTerminal('MAC Address: 24:0A:C4:XX:XX:XX');
+                logToTerminal('Chip type: ESP32 (Simulation)');
                 logToTerminal('Uploading stub...', 'system');
                 
                 await new Promise(r => setTimeout(r, 1200));
@@ -207,17 +230,21 @@
                 // Simulate erasing process
                 await new Promise(r => setTimeout(r, 3500));
                 
-                logToTerminal('Chip erase completed successfully in 3.4s', 'success');
+                logToTerminal('Chip erase completed successfully', 'success');
                 logToTerminal('Hard resetting via RTS pin...');
                 
             } catch (err) {
-                logToTerminal('Error: ' + err.message, 'error');
+                // This catches the error if the user clicks "Cancel" in the browser prompt
+                if (err.name === 'NotFoundError') {
+                    logToTerminal('Operation cancelled: No port selected by the user.', 'error');
+                } else {
+                    logToTerminal('Error: ' + err.message, 'error');
+                }
             } finally {
+                // Always reset the button and state when done or failed
                 isConnecting = false;
-                connectBtn.disabled = false;
-                connectBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h8"/><path d="M12 8v8"/><path d="M12 3a9 9 0 0 0-9 9c0 4.97 4 9 9 9s9-4.03 9-9a9 9 0 0 0-9-9Z"/></svg> Connect & Erase`;
-                connectBtn.classList.replace('bg-zinc-600', 'bg-red-600');
-                connectBtn.classList.add('hover:bg-red-700');
+                activePort = null;
+                setButtonLoading(false);
             }
         });
     </script>
