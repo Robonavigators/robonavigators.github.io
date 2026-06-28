@@ -307,17 +307,24 @@
 
             const binUrl = URL.createObjectURL(file);
 
+            // Array of all chip families supported by ESP Web Tools
+            const supportedChips = [
+                "ESP8266", "ESP32", "ESP32-S2", "ESP32-S3", 
+                "ESP32-C2", "ESP32-C3", "ESP32-C6", "ESP32-H2"
+            ];
+
+            // Create a build configuration for every supported chip mapping to the same bin
+            const multiBoardBuilds = supportedChips.map(chip => ({
+                chipFamily: chip,
+                parts: [
+                    { path: binUrl, offset: 0 } 
+                ]
+            }));
+
             const customManifest = {
                 name: file.name,
                 version: "Local Upload",
-                builds: [
-                    {
-                        chipFamily: "ESP32-C3", 
-                        parts: [
-                            { path: binUrl, offset: 0 } 
-                        ]
-                    }
-                ]
+                builds: multiBoardBuilds
             };
 
             const manifestBlob = new Blob([JSON.stringify(customManifest)], { type: 'application/json' });
@@ -331,7 +338,7 @@
                 features: [
                     "Local file upload via browser memory",
                     "Flashed at offset 0x00",
-                    "Works with any merged binary"
+                    "Universal board support (Auto-detected)"
                 ]
             });
 
