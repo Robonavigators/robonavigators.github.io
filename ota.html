@@ -186,7 +186,7 @@
 
                 <div class="input-group">
                     <label class="input-label" for="espAuthUser">Username (Optional)</label>
-                    <input type="text" id="espAuthUser" class="ip-input" placeholder="e.g., admin" value="admin">
+                    <input type="text" id="espAuthUser" class="ip-input" placeholder="Leave blank if not required">
                 </div>
 
                 <div class="input-group">
@@ -250,8 +250,8 @@
 
             // If password is typed, build a Basic Auth Header
             if (password !== "") {
-                // Default username to 'admin' if password is filled but user left username empty
-                const finalUser = username || 'admin';
+                // If a password is given but username is left blank, use an empty string for the username
+                const finalUser = username || "";
                 // Basic auth format requires a Base64 encoding of "username:password"
                 const credentials = btoa(`${finalUser}:${password}`);
                 fetchOptions.headers['Authorization'] = `Basic ${credentials}`;
