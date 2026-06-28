@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -13,36 +13,50 @@
         }
         body {
             font-family: var(--font-sans);
-            background-color: #09090b; /* zinc-950 */
-            color: #f4f4f5; /* zinc-100 */
         }
         .selection-brand {
             ::selection {
-                background-color: rgba(4, 132, 248, 0.3); /* brand blue */
+                background-color: rgba(4, 132, 248, 0.3);
             }
         }
     </style>
 </head>
-<body class="selection-brand">
-    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 blur-[120px] -z-10 rounded-full"></div>
-    <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/5 blur-[120px] -z-10 rounded-full"></div>
+<body class="selection-brand bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-[#f4f4f5] transition-colors duration-300">
+    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 dark:bg-blue-600/5 blur-[120px] -z-10 rounded-full"></div>
+    <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/10 dark:bg-emerald-600/5 blur-[120px] -z-10 rounded-full"></div>
 
-    <nav class="border-b border-zinc-900 px-6 py-4">
+    <nav class="border-b border-zinc-200 dark:border-zinc-900 px-6 py-4 transition-colors duration-300">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                <span class="font-mono text-sm tracking-tighter font-bold uppercase">Robonavigators.Tools</span>
+                <span class="font-mono text-sm tracking-tighter font-bold uppercase text-zinc-900 dark:text-white">Robonavigators.Tools</span>
             </div>
+            
+            <button id="themeToggle" class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-sm">
+                <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:block">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                </svg>
+                <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                </svg>
+            </button>
         </div>
     </nav>
 
     <main class="max-w-4xl mx-auto px-6 py-20">
         <header class="mb-16 text-center md:text-left">
             <div class="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-white">
-                    Deployment <span class="text-zinc-700">Hub</span>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-zinc-900 dark:text-white transition-colors duration-300">
+                    Deployment <span class="text-zinc-400 dark:text-zinc-700">Hub</span>
                 </h1>
-                <p class="text-zinc-500 max-w-xl text-lg font-medium">
+                <p class="text-zinc-500 max-w-xl text-lg font-medium mx-auto md:mx-0">
                     Select a tool to deploy firmware to your Robonavigators hardware. Connect locally via Web Serial or update wirelessly over the air.
                 </p>
             </div>
@@ -50,55 +64,55 @@
 
         <div class="flex flex-col gap-6">
             
-            <a href="./flash.html" class="relative group bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row md:items-center gap-8 hover:border-zinc-700 hover:bg-zinc-900 transition-all shadow-xl cursor-pointer overflow-hidden animate-in fade-in zoom-in-95 duration-500">
+            <a href="./flash.html" class="relative group bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row md:items-center gap-8 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all shadow-xl hover:shadow-2xl cursor-pointer overflow-hidden animate-in fade-in zoom-in-95 duration-500">
                 <div class="absolute -inset-px bg-gradient-to-tr from-blue-500/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div class="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform duration-500">
+                <div class="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10a3 3 0 1 1 6 0c0 1.5-1.5 3-3 3s-3-1.5-3-3Z"/><path d="M12 13v8"/><path d="M12 3v4"/><path d="M4 12h4"/><path d="M16 12h4"/></svg>
                 </div>
 
                 <div class="relative z-10 flex-grow">
-                    <h3 class="text-2xl font-bold mb-2 text-white tracking-tight flex items-center gap-3">
+                    <h3 class="text-2xl font-bold mb-2 text-zinc-900 dark:text-white tracking-tight flex items-center gap-3 transition-colors duration-300">
                         Robonavigators ESP Flasher
                     </h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed max-w-2xl">
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed max-w-2xl transition-colors duration-300">
                         Connect your board via USB to flash official firmwares or upload custom .bin files directly through your browser using Web Serial.
                     </p>
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-950 text-zinc-500 border border-zinc-800 rounded-md">Web Serial</span>
-                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-950 text-zinc-500 border border-zinc-800 rounded-md">USB-C</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-100 dark:bg-zinc-950 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-md transition-colors duration-300">Web Serial</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-100 dark:bg-zinc-950 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-md transition-colors duration-300">USB-C</span>
                     </div>
                 </div>
 
                 <div class="relative z-10 shrink-0 md:ml-auto">
-                    <div class="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center group-hover:border-white group-hover:bg-white text-zinc-600 group-hover:text-black transition-all">
+                    <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:border-zinc-900 dark:group-hover:border-white group-hover:bg-zinc-900 dark:group-hover:bg-white text-zinc-400 dark:text-zinc-600 group-hover:text-white dark:group-hover:text-black transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                     </div>
                 </div>
             </a>
 
-            <a href="./ota.html" class="relative group bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row md:items-center gap-8 hover:border-zinc-700 hover:bg-zinc-900 transition-all shadow-xl cursor-pointer overflow-hidden animate-in fade-in zoom-in-95 delay-150 duration-500">
+            <a href="./ota.html" class="relative group bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row md:items-center gap-8 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all shadow-xl hover:shadow-2xl cursor-pointer overflow-hidden animate-in fade-in zoom-in-95 delay-150 duration-500">
                 <div class="absolute -inset-px bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div class="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform duration-500">
+                <div class="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13v8"/><path d="M12 3v4"/><path d="M18.36 5.64a9 9 0 0 1 0 12.72"/><path d="M5.64 5.64a9 9 0 0 0 0 12.72"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
                 </div>
 
                 <div class="relative z-10 flex-grow">
-                    <h3 class="text-2xl font-bold mb-2 text-white tracking-tight">
+                    <h3 class="text-2xl font-bold mb-2 text-zinc-900 dark:text-white tracking-tight transition-colors duration-300">
                         Wireless OTA Uploader
                     </h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed max-w-2xl">
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed max-w-2xl transition-colors duration-300">
                         Update your ESP32 devices over your local Wi-Fi network. No physical USB connection required for devices already running compatible OTA firmware.
                     </p>
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-950 text-zinc-500 border border-zinc-800 rounded-md">Wi-Fi</span>
-                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-950 text-zinc-500 border border-zinc-800 rounded-md">Wireless</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-100 dark:bg-zinc-950 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-md transition-colors duration-300">Wi-Fi</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-100 dark:bg-zinc-950 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-md transition-colors duration-300">Wireless</span>
                     </div>
                 </div>
 
                 <div class="relative z-10 shrink-0 md:ml-auto">
-                    <div class="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center group-hover:border-white group-hover:bg-white text-zinc-600 group-hover:text-black transition-all">
+                    <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:border-zinc-900 dark:group-hover:border-white group-hover:bg-zinc-900 dark:group-hover:bg-white text-zinc-400 dark:text-zinc-600 group-hover:text-white dark:group-hover:text-black transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                     </div>
                 </div>
@@ -107,8 +121,17 @@
         </div>
     </main>
 
-    <footer class="mt-12 py-8 border-t border-zinc-900 text-center">
-        <p class="text-zinc-600 text-xs font-mono uppercase tracking-widest">&copy; 2026 Robonavigators</p>
+    <footer class="mt-12 py-8 border-t border-zinc-200 dark:border-zinc-900 text-center transition-colors duration-300">
+        <p class="text-zinc-500 dark:text-zinc-600 text-xs font-mono uppercase tracking-widest">&copy; 2026 Robonavigators</p>
     </footer>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        themeToggle.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+        });
+    </script>
 </body>
 </html>
