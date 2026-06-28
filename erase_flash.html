@@ -1,156 +1,270 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Erase Flash | Robonavigators</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
-        @theme {
-            --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-            --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+        :root {
+            --brand-blue: #0484f8; 
+            --brand-blue-light: #e6f2ff;
+            --brand-red: #ef4444;
         }
+
         body {
-            font-family: var(--font-sans);
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
         }
-        .selection-brand {
-            ::selection {
-                background-color: rgba(239, 68, 68, 0.3);
-            }
+
+        .container {
+            width: 900px;
+            max-width: 95%;
         }
-        .terminal-scroll::-webkit-scrollbar {
-            width: 8px;
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
         }
-        .terminal-scroll::-webkit-scrollbar-track {
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Controls Area */
+        .controls-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .control-group select {
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            color: #1e293b;
+            background-color: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .control-group select:focus {
+            border-color: var(--brand-red);
+        }
+
+        .erase-btn {
+            background-color: var(--brand-red);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            height: 46px; /* Match select height */
+        }
+
+        .erase-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .erase-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Terminal Area */
+        .terminal-wrapper {
+            background: #0f172a;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 1px solid #1e293b;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .terminal-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+
+        .clear-btn {
             background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
         }
-        .terminal-scroll::-webkit-scrollbar-thumb {
-            background-color: #3f3f46;
-            border-radius: 20px;
+
+        .clear-btn:hover {
+            color: #fff;
+        }
+
+        .terminal {
+            height: 250px;
+            overflow-y: auto;
+            padding: 15px;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+
+        /* Terminal syntax colors */
+        .log-time { color: #64748b; margin-right: 8px; }
+        .log-success { color: #34d399; }
+        .log-error { color: #f87171; }
+        .log-warning { color: #fbbf24; }
+        .log-system { color: #60a5fa; }
+
+        /* Custom scrollbar for terminal */
+        .terminal::-webkit-scrollbar { width: 8px; }
+        .terminal::-webkit-scrollbar-track { background: transparent; }
+        .terminal::-webkit-scrollbar-thumb { background-color: #334155; border-radius: 20px; }
+
+        /* Warning Note */
+        .warning-note {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #d97706;
+            background-color: #fffbeb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #fef3c7;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .footer a {
+            color: #64748b;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            color: var(--brand-blue);
         }
     </style>
 </head>
-<body class="selection-brand bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-[#f4f4f5] transition-colors duration-300 min-h-screen flex flex-col">
-    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-red-600/10 dark:bg-red-600/5 blur-[120px] -z-10 rounded-full"></div>
-    <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-orange-600/10 dark:bg-orange-600/5 blur-[120px] -z-10 rounded-full"></div>
+<body>
 
-    <nav class="border-b border-zinc-200 dark:border-zinc-900 px-6 py-4 transition-colors duration-300">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <a href="./index.html" class="p-2 -ml-2 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                </a>
-                <span class="font-mono text-sm tracking-tighter font-bold uppercase text-zinc-900 dark:text-white">Robonavigators.Tools</span>
+    <div class="container">
+        <div class="card">
+
+            <div class="header">
+                <div>
+                    <div class="title">Erase Flash Memory</div>
+                    <div class="subtitle">Completely format the flash memory of your ESP board via USB.</div>
+                </div>
             </div>
-            
-            <button id="themeToggle" class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-sm">
-                <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:block">
-                    <circle cx="12" cy="12" r="4"></circle>
-                    <path d="M12 2v2"></path>
-                    <path d="M12 20v2"></path>
-                    <path d="m4.93 4.93 1.41 1.41"></path>
-                    <path d="m17.66 17.66 1.41 1.41"></path>
-                    <path d="M2 12h2"></path>
-                    <path d="M20 12h2"></path>
-                    <path d="m6.34 17.66-1.41 1.41"></path>
-                    <path d="m19.07 4.93-1.41 1.41"></path>
-                </svg>
-                <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden">
-                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-                </svg>
-            </button>
+
+            <div class="controls-row">
+                <div class="control-group">
+                    <label for="baudRate">Baud Rate</label>
+                    <select id="baudRate">
+                        <option value="115200">115200</option>
+                        <option value="460800">460800</option>
+                        <option value="921600" selected>921600 (Fast)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <button id="connectBtn" class="erase-btn">
+                        Connect & Erase
+                    </button>
+                </div>
+            </div>
+
+            <div class="terminal-wrapper">
+                <div class="terminal-header">
+                    <span class="terminal-title">Serial Output</span>
+                    <button class="clear-btn" id="clearLogBtn">Clear Logs</button>
+                </div>
+                <div class="terminal" id="terminal">
+                    <div style="color: #64748b">Robonavigators Web Serial Utility v1.0.0</div>
+                    <div style="color: #64748b; margin-bottom: 10px;">Waiting for device connection...</div>
+                </div>
+            </div>
+
+            <div class="warning-note">
+                <strong>Destructive Action:</strong> This process cannot be undone. Your board will be rendered unbootable until new firmware is flashed.
+            </div>
+
+            <div class="footer">
+                Chrome, Edge browser required • Use at your own risk <br>
+                For more general information visit the <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>
+            </div>
+
         </div>
-    </nav>
-
-    <main class="max-w-4xl mx-auto px-6 py-12 flex-grow w-full">
-        <header class="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-500 mb-4 border border-red-200 dark:border-red-900/30">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-            </div>
-            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tighter mb-3 text-zinc-900 dark:text-white transition-colors duration-300">
-                Erase Flash Memory
-            </h1>
-            <p class="text-zinc-500 dark:text-zinc-400 max-w-2xl text-base font-medium">
-                Connect your ESP32/ESP8266 board via USB. This tool will completely format the flash memory, removing all partitions, firmware, and stored Wi-Fi credentials.
-            </p>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
-            <div class="md:col-span-1 flex flex-col gap-4">
-                
-                <div class="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/50 rounded-2xl p-5">
-                    <div class="flex items-start gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-orange-600 dark:text-orange-500 shrink-0 mt-0.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                        <div>
-                            <h4 class="text-sm font-bold text-orange-900 dark:text-orange-400 mb-1">Destructive Action</h4>
-                            <p class="text-xs text-orange-800 dark:text-orange-300/80 leading-relaxed">
-                                This process cannot be undone. Your board will be rendered unbootable until new firmware is flashed.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
-                    <h3 class="text-sm font-bold mb-4 text-zinc-900 dark:text-white">Connection Settings</h3>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Baud Rate</label>
-                            <select id="baudRate" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-300 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 transition-colors appearance-none">
-                                <option value="115200">115200</option>
-                                <option value="460800">460800</option>
-                                <option value="921600" selected>921600 (Fast)</option>
-                            </select>
-                        </div>
-
-                        <button id="connectBtn" class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-md shadow-red-600/20 active:scale-[0.98]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h8"/><path d="M12 8v8"/><path d="M12 3a9 9 0 0 0-9 9c0 4.97 4 9 9 9s9-4.03 9-9a9 9 0 0 0-9-9Z"/></svg>
-                            Connect & Erase
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="md:col-span-2 bg-[#0c0c0e] border border-zinc-800 rounded-2xl flex flex-col overflow-hidden shadow-xl">
-                <div class="bg-[#18181b] border-b border-zinc-800 px-4 py-3 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
-                        <span class="text-xs font-mono text-zinc-400">Serial Output</span>
-                    </div>
-                    <button id="clearLogBtn" class="text-xs font-medium text-zinc-500 hover:text-white transition-colors">Clear</button>
-                </div>
-                
-                <div id="terminal" class="p-4 h-[350px] overflow-y-auto terminal-scroll font-mono text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                    <div class="text-zinc-500">Robonavigators Web Serial Utility v1.0.0</div>
-                    <div class="text-zinc-500 mb-4">Waiting for device connection...</div>
-                    </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="py-6 border-t border-zinc-200 dark:border-zinc-900 text-center transition-colors duration-300 mt-auto flex flex-col items-center gap-3">
-        <p class="text-zinc-500 dark:text-zinc-400 text-sm">
-            For more information, visit the 
-            <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 font-medium underline decoration-red-500/30 underline-offset-4 transition-colors">
-                Robonavigators GitHub Page
-            </a>.
-        </p>
-        <p class="text-zinc-400 dark:text-zinc-600 text-xs font-mono uppercase tracking-widest">&copy; 2026 Robonavigators</p>
-    </footer>
+    </div>
 
     <script type="module">
         import { Transport, ESPLoader } from 'https://esm.sh/esptool-js@0.5.4';
 
-        // Theme Toggle Logic
-        const themeToggle = document.getElementById('themeToggle');
-        const htmlElement = document.documentElement;
-
-        themeToggle.addEventListener('click', () => {
-            htmlElement.classList.toggle('dark');
-        });
-
-        // Real Serial & Esptool Logic
         const connectBtn = document.getElementById('connectBtn');
         const terminal = document.getElementById('terminal');
         const clearLogBtn = document.getElementById('clearLogBtn');
@@ -158,7 +272,6 @@
         
         let isWorking = false;
 
-        // Custom terminal logger to pipe esptool-js outputs into your UI
         const terminalLogger = {
             clean() {
                 terminal.innerHTML = '';
@@ -167,27 +280,25 @@
                 logToTerminal(data);
             },
             write(data) {
-                // esptool-js sometimes outputs raw text without newlines (like progress dots)
-                // We'll just append it to the last line or print it normally for simplicity
                 logToTerminal(data);
             }
         };
 
         function logToTerminal(message, type = 'info') {
-            if (!message.trim()) return; // Skip empty lines
+            if (!message.trim()) return; 
             
             const line = document.createElement('div');
             
             const now = new Date();
             const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
             
-            let colorClass = 'text-zinc-300';
-            if (type === 'success') colorClass = 'text-emerald-400';
-            if (type === 'error' || message.toLowerCase().includes('error')) colorClass = 'text-red-400';
-            if (type === 'warning' || message.toLowerCase().includes('warning')) colorClass = 'text-orange-400';
-            if (type === 'system') colorClass = 'text-blue-400';
+            let colorClass = '';
+            if (type === 'success') colorClass = 'log-success';
+            else if (type === 'error' || message.toLowerCase().includes('error')) colorClass = 'log-error';
+            else if (type === 'warning' || message.toLowerCase().includes('warning')) colorClass = 'log-warning';
+            else if (type === 'system') colorClass = 'log-system';
 
-            line.innerHTML = `<span class="text-zinc-600 mr-2">[${time}]</span> <span class="${colorClass}">${message}</span>`;
+            line.innerHTML = `<span class="log-time">[${time}]</span> <span class="${colorClass}">${message}</span>`;
             terminal.appendChild(line);
             terminal.scrollTop = terminal.scrollHeight;
         }
@@ -200,14 +311,10 @@
         function setButtonLoading(loading) {
             if (loading) {
                 connectBtn.disabled = true;
-                connectBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Erasing...`;
-                connectBtn.classList.replace('bg-red-600', 'bg-zinc-600');
-                connectBtn.classList.remove('hover:bg-red-700');
+                connectBtn.innerText = `Erasing...`;
             } else {
                 connectBtn.disabled = false;
-                connectBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h8"/><path d="M12 8v8"/><path d="M12 3a9 9 0 0 0-9 9c0 4.97 4 9 9 9s9-4.03 9-9a9 9 0 0 0-9-9Z"/></svg> Connect & Erase`;
-                connectBtn.classList.replace('bg-zinc-600', 'bg-red-600');
-                connectBtn.classList.add('hover:bg-red-700');
+                connectBtn.innerText = `Connect & Erase`;
             }
         }
 
@@ -225,17 +332,14 @@
             let esploader;
 
             try {
-                // 1. Request port access from the user
                 logToTerminal('Requesting serial port...', 'system');
                 port = await navigator.serial.requestPort();
                 
                 setButtonLoading(true);
                 const baudRate = parseInt(baudRateSelect.value);
                 
-                // 2. Initialize Transport layer
-                transport = new Transport(port, true); // true for enable tracing/logging
+                transport = new Transport(port, true); 
                 
-                // 3. Initialize ESPLoader
                 esploader = new ESPLoader({
                     transport: transport,
                     baudrate: baudRate,
@@ -244,17 +348,14 @@
 
                 logToTerminal('Connecting to ESP...', 'system');
                 
-                // 4. Connect, sync, and upload stub
                 const chip = await esploader.main();
                 logToTerminal(`Successfully connected to ${chip}`, 'success');
 
-                // 5. Execute actual erase command
                 logToTerminal('Starting flash erase. This may take up to 20 seconds. Please do not disconnect...', 'warning');
                 await esploader.erase_flash();
                 
                 logToTerminal('Chip completely erased successfully!', 'success');
 
-                // 6. Hard reset the board so it boots into standard mode
                 logToTerminal('Hard resetting via RTS pin...', 'system');
                 await esploader.hard_reset();
 
@@ -265,7 +366,6 @@
                     logToTerminal(`Failed: ${err.message}`, 'error');
                 }
             } finally {
-                // Ensure the port is closed if it was opened
                 if (transport) {
                     try {
                         await transport.disconnect();
