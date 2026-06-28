@@ -151,6 +151,25 @@
             margin-bottom: 6px;
         }
 
+        /* --- Inline Repo Link inside Intro --- */
+        .repo-inline-link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #475569;
+            padding-top: 15px;
+            border-top: 1px dashed #cbd5e1;
+        }
+        
+        .repo-inline-link a {
+            color: var(--brand-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .repo-inline-link a:hover {
+            text-decoration: underline;
+        }
+
         /* Install button */
         esp-web-install-button {
             --esp-web-install-button-color: var(--brand-blue);
@@ -172,26 +191,8 @@
             text-align: center;
         }
 
-        /* --- Repo Link --- */
-        .repo-link {
-            margin-top: 20px;
-            font-size: 14px;
-            text-align: center;
-            color: #475569;
-        }
-        
-        .repo-link a {
-            color: var(--brand-blue);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .repo-link a:hover {
-            text-decoration: underline;
-        }
-
         .footer {
-            margin-top: 10px;
+            margin-top: 20px;
             font-size: 12px;
             color: #94a3b8;
             text-align: center;
@@ -236,17 +237,17 @@
                         <li>Have ArduinoOTA to Flash new games</li>
                         <li>Uses TTP223 Touch switch Module to make it futurisitic</li>
                     </ul>
+                    
+                    <div class="repo-inline-link" id="repoLink">
+                        For more information visit <a href="https://github.com/Robonavigators/Retro_Futuristic_Console" target="_blank">Retro_Futristic_Console</a>
+                    </div>
                 </div>
-                </div>
+            </div>
 
             <esp-web-install-button id="installBtn" manifest="manifest_retro.json"></esp-web-install-button>
 
             <div class="warning-note">
                 <strong>Note:</strong> Make sure the board is connected properly and make sure any serial port requiring application or websites is closed.
-            </div>
-
-            <div class="repo-link" id="repoLink">
-                For more information visit <a href="https://github.com/Robonavigators/Retro_Futuristic_Console" target="_blank">Retro_Futristic_Console</a>
             </div>
 
             <div class="footer">
@@ -261,15 +262,12 @@
             {
                 manifest: "manifest_retro.json",
                 title: "Retro_Console",
-                // Fixed missing quote below
                 desc: "Installs the futurisitic Retro Console firmware.", 
-                // Fixed missing commas below
                 features: [
                     "Optimized for full white 1.3inch SH1106 OLED",
                     "Have ArduinoOTA to Flash new games",
                     "Uses TTP223 Touch switch Module to make it futurisitic"
                 ],
-                // Added repo link data
                 repoName: "Retro_Futristic_Console",
                 repoLink: "https://github.com/Robonavigators/Retro_Futuristic_Console"
             },
@@ -282,7 +280,6 @@
                     "Weather data using Open Weather Map",
                     "Optimized for full white 0.96inch SSD1306 OLED"
                 ],
-                // Added repo link data
                 repoName: "Desk_Buddy",
                 repoLink: "https://github.com/Robonavigators/Desk_Buddy"
             }
@@ -306,12 +303,14 @@
                 ul.appendChild(li);
             });
             
-            // Dynamic Repo Link Update
+            // Dynamic Repo Link Update inside the info panel
             const repoLinkDiv = document.getElementById("repoLink");
-            if(fw.repoLink) {
+            if (fw.repoLink) {
+                repoLinkDiv.style.display = "block";
                 repoLinkDiv.innerHTML = `For more information visit <a href="${fw.repoLink}" target="_blank">${fw.repoName}</a>`;
             } else {
-                repoLinkDiv.innerHTML = `For more information visit <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>`;
+                // Hides the link entirely for Custom .bin uploads
+                repoLinkDiv.style.display = "none";
             }
         }
 
@@ -322,14 +321,12 @@
 
             const binUrl = URL.createObjectURL(file);
 
-            // Array of all chip families supported by ESP Web Tools (Added ESP32-P4)
             const supportedChips = [
                 "ESP8266", "ESP32", "ESP32-S2", "ESP32-S3", 
                 "ESP32-C2", "ESP32-C3", "ESP32-C5", "ESP32-C6", "ESP32-H2",
                 "ESP32-P4"
             ];
 
-            // Create a build configuration for every supported chip mapping to the same bin
             const multiBoardBuilds = supportedChips.map(chip => ({
                 chipFamily: chip,
                 parts: [
@@ -356,7 +353,7 @@
                     "Flashed at offset 0x00",
                     "Universal board support (Auto-detected)"
                 ],
-                // Custom upload doesn't have a specific repo link, so it will fall back to main page
+                // No repo link for custom uploads
                 repoName: null, 
                 repoLink: null 
             });
