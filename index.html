@@ -24,6 +24,7 @@
 <body class="selection-brand bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-[#f4f4f5] transition-colors duration-300">
     <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 dark:bg-blue-600/5 blur-[120px] -z-10 rounded-full"></div>
     <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/10 dark:bg-emerald-600/5 blur-[120px] -z-10 rounded-full"></div>
+    <div class="fixed top-1/2 right-1/4 w-[400px] h-[400px] bg-red-600/10 dark:bg-red-600/5 blur-[120px] -z-10 rounded-full"></div>
 
     <nav class="border-b border-zinc-200 dark:border-zinc-900 px-6 py-4 transition-colors duration-300">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
@@ -108,6 +109,33 @@
                     <div class="mt-4 flex flex-wrap gap-2">
                         <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-100 dark:bg-zinc-950 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-md transition-colors duration-300">Wi-Fi</span>
                         <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-100 dark:bg-zinc-950 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-md transition-colors duration-300">Wireless</span>
+                    </div>
+                </div>
+
+                <div class="relative z-10 shrink-0 md:ml-auto">
+                    <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:border-zinc-900 dark:group-hover:border-white group-hover:bg-zinc-900 dark:group-hover:bg-white text-zinc-400 dark:text-zinc-600 group-hover:text-white dark:group-hover:text-black transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                </div>
+            </a>
+
+            <a href="./erase_flash.html" class="relative group bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row md:items-center gap-8 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all shadow-xl hover:shadow-2xl cursor-pointer overflow-hidden animate-in fade-in zoom-in-95 delay-300 duration-500">
+                <div class="absolute -inset-px bg-gradient-to-tr from-red-500/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div class="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                </div>
+
+                <div class="relative z-10 flex-grow">
+                    <h3 class="text-2xl font-bold mb-2 text-zinc-900 dark:text-white tracking-tight transition-colors duration-300">
+                        Erase Flash Memory
+                    </h3>
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed max-w-2xl transition-colors duration-300">
+                        Completely wipe the flash memory of your board. Ideal for clearing corrupted partitions, resetting old credentials, or preparing for a clean firmware install.
+                    </p>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-100 dark:bg-zinc-950 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-md transition-colors duration-300">Web Serial</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-100 dark:bg-zinc-950 text-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-md transition-colors duration-300">Utility</span>
                     </div>
                 </div>
 
