@@ -1,339 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robonavigators ESP Flasher</title>
-
-    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
-
+    <title>Robonavigators | Tool Hub</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --brand-blue: #0484f8; 
-            --brand-blue-light: #e6f2ff;
+        @theme {
+            --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
         }
-
         body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #eef2ff, #f8fafc);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: relative;
+            font-family: var(--font-sans);
+            background-color: #09090b; /* zinc-950 */
+            color: #f4f4f5; /* zinc-100 */
         }
-
-        /* --- Custom .Bin Button --- */
-        .custom-bin-upload {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            border: 2px solid #ef4444; 
-            background-color: transparent;
-            color: #ef4444;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            display: inline-block;
-        }
-
-        .custom-bin-upload:hover {
-            background-color: #ef4444;
-            color: #ffffff;
-        }
-
-        .custom-bin-upload input[type="file"] {
-            display: none;
-        }
-        /* -------------------------- */
-
-        .container {
-            width: 900px;
-            max-width: 95%;
-        }
-
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        /* Firmware selection cards */
-        .firmware-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .fw {
-            flex: 1;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .fw:hover {
-            border-color: #cbd5e1;
-        }
-
-        .fw.active {
-            border-color: var(--brand-blue);
-            background: var(--brand-blue-light);
-        }
-
-        .fw-title {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-
-        .fw-desc {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        /* Info panel */
-        .info-panel {
-            margin-bottom: 25px;
-            background: #f8fafc;
-            padding: 20px 25px;
-            border-radius: 12px;
-            border: 1px solid #f1f5f9;
-        }
-
-        .info-text h2 {
-            margin: 0 0 10px 0;
-            color: #1e293b;
-            font-size: 20px;
-        }
-
-        .info-text p {
-            font-size: 14px;
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            word-wrap: break-word; /* Prevents long file names from breaking layout */
-        }
-
-        .info-text ul {
-            font-size: 13px;
-            color: #475569;
-            padding-left: 20px;
-            margin: 0;
-        }
-        
-        .info-text li {
-            margin-bottom: 6px;
-        }
-
-        /* Install button */
-        esp-web-install-button {
-            --esp-web-install-button-color: var(--brand-blue);
-            --esp-web-install-button-text-color: #ffffff;
-            --esp-web-install-button-border-radius: 10px;
-            width: 100%;
-            display: block;
-        }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #94a3b8;
-            text-align: center;
+        .selection-brand {
+            ::selection {
+                background-color: rgba(4, 132, 248, 0.3); /* brand blue */
+            }
         }
     </style>
 </head>
-<body>
+<body class="selection-brand">
+    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 blur-[120px] -z-10 rounded-full"></div>
+    <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/5 blur-[120px] -z-10 rounded-full"></div>
 
-    <label class="custom-bin-upload">
-        Add your own .bin
-        <input type="file" accept=".bin" id="customFileInput">
-    </label>
-
-    <div class="container">
-        <div class="card">
-
-            <div class="header">
-                <div>
-                    <div class="title">Robonavigators ESP Flasher</div>
-                    <div class="subtitle">Select a project to flash directly via USB</div>
-                </div>
+    <nav class="border-b border-zinc-900 px-6 py-4">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span class="font-mono text-sm tracking-tighter font-bold uppercase">Robonavigators.Tools</span>
             </div>
+        </div>
+    </nav>
 
-            <div class="firmware-row" id="firmwareRow">
-                <div class="fw active" onclick="selectFW(0, this)">
-                    <div class="fw-title">Retro_Console</div>
-                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
+    <main class="max-w-4xl mx-auto px-6 py-20">
+        <header class="mb-16 text-center md:text-left">
+            <div class="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-white">
+                    Deployment <span class="text-zinc-700">Hub</span>
+                </h1>
+                <p class="text-zinc-500 max-w-xl text-lg font-medium">
+                    Select a tool to deploy firmware to your Robonavigators hardware. Connect locally via Web Serial or update wirelessly over the air.
+                </p>
+            </div>
+        </header>
+
+        <div class="flex flex-col gap-6">
+            
+            <a href="flash.html" class="relative group bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row md:items-center gap-8 hover:border-zinc-700 hover:bg-zinc-900 transition-all shadow-xl cursor-pointer overflow-hidden animate-in fade-in zoom-in-95 duration-500">
+                <div class="absolute -inset-px bg-gradient-to-tr from-blue-500/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div class="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10a3 3 0 1 1 6 0c0 1.5-1.5 3-3 3s-3-1.5-3-3Z"/><path d="M12 13v8"/><path d="M12 3v4"/><path d="M4 12h4"/><path d="M16 12h4"/></svg>
                 </div>
 
-                <div class="fw" onclick="selectFW(1, this)">
-                    <div class="fw-title">Desk_Buddy</div>
-                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
+                <div class="relative z-10 flex-grow">
+                    <h3 class="text-2xl font-bold mb-2 text-white tracking-tight flex items-center gap-3">
+                        Robonavigators ESP Flasher
+                    </h3>
+                    <p class="text-zinc-400 text-sm leading-relaxed max-w-2xl">
+                        Connect your board via USB to flash official firmwares or upload custom .bin files directly through your browser using Web Serial.
+                    </p>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-950 text-zinc-500 border border-zinc-800 rounded-md">Web Serial</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-950 text-zinc-500 border border-zinc-800 rounded-md">USB-C</span>
+                    </div>
                 </div>
-            </div>
 
-            <div class="info-panel">
-                <div class="info-text">
-                    <h2 id="fwTitle">Retro_Console</h2>
-                    <p id="fwDesc">Installs the core Retro Console firmware. Ensure your ESP32-C3 is connected and any serial port requiring applications/websites are closed.</p>
-                    <ul id="fwFeatures">
-                        <li>Optimized for full white 1.3inch SH1106 OLED</li>
-                        <li>Mimics old retro consoles</li>
-                        <li>Uses modern features</li>
-                    </ul>
+                <div class="relative z-10 shrink-0 md:ml-auto">
+                    <div class="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center group-hover:border-white group-hover:bg-white text-zinc-600 group-hover:text-black transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
                 </div>
-            </div>
+            </a>
 
-            <esp-web-install-button id="installBtn" manifest="manifest_retro.json"></esp-web-install-button>
+            <a href="ota.html" class="relative group bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row md:items-center gap-8 hover:border-zinc-700 hover:bg-zinc-900 transition-all shadow-xl cursor-pointer overflow-hidden animate-in fade-in zoom-in-95 delay-150 duration-500">
+                <div class="absolute -inset-px bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div class="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13v8"/><path d="M12 3v4"/><path d="M18.36 5.64a9 9 0 0 1 0 12.72"/><path d="M5.64 5.64a9 9 0 0 0 0 12.72"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
+                </div>
 
-            <div class="footer">
-                Chrome, Edge browser required • Flash at your own risk
-            </div>
+                <div class="relative z-10 flex-grow">
+                    <h3 class="text-2xl font-bold mb-2 text-white tracking-tight">
+                        Wireless OTA Uploader
+                    </h3>
+                    <p class="text-zinc-400 text-sm leading-relaxed max-w-2xl">
+                        Update your ESP32 devices over your local Wi-Fi network. No physical USB connection required for devices already running compatible OTA firmware.
+                    </p>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-950 text-zinc-500 border border-zinc-800 rounded-md">Wi-Fi</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-zinc-950 text-zinc-500 border border-zinc-800 rounded-md">Wireless</span>
+                    </div>
+                </div>
+
+                <div class="relative z-10 shrink-0 md:ml-auto">
+                    <div class="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center group-hover:border-white group-hover:bg-white text-zinc-600 group-hover:text-black transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                </div>
+            </a>
 
         </div>
-    </div>
+    </main>
 
-    <script>
-        // Your specific project data
-        const firmwareData = [
-            {
-                manifest: "manifest_retro.json",
-                title: "Retro_Console",
-                desc: "Installs the core Retro Console firmware. Ensure your ESP32-C3 is connected and any serial port requiring applications/websites are closed.",
-                features: [
-                    "Optimized for full white 1.3inch SH1106 OLED",
-                    "Mimics old retro consoles",
-                    "Uses modern features"
-                ]
-            },
-            {
-                manifest: "manifest_desk.json",
-                title: "Desk_Buddy",
-                desc: "Installs the interactive Desk Buddy firmware. Turns your board into an interactive companion.",
-                features: [
-                    "Expressive eye animations",
-                    "Weather data using Open Weather Map",
-                    "Optimized for full white 0.96inch SSD1306 OLED"
-                ]
-            }
-        ];
-
-        function selectFW(index, el) {
-            // Update active styling
-            document.querySelectorAll('.fw').forEach(f => f.classList.remove('active'));
-            el.classList.add('active');
-
-            const fw = firmwareData[index];
-
-            // Update DOM elements
-            document.getElementById("installBtn").setAttribute("manifest", fw.manifest);
-            document.getElementById("fwTitle").innerText = fw.title;
-            document.getElementById("fwDesc").innerText = fw.desc;
-
-            // Update features list
-            const ul = document.getElementById("fwFeatures");
-            ul.innerHTML = "";
-            fw.features.forEach(f => {
-                const li = document.createElement("li");
-                li.innerText = f;
-                ul.appendChild(li);
-            });
-        }
-
-        // --- Dynamic Local File Upload Logic ---
-        document.getElementById('customFileInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // 1. Create a local temporary URL for the .bin file
-            const binUrl = URL.createObjectURL(file);
-
-            // 2. Define all chip families supported by ESP Web Tools
-            const supportedChips = [
-                "ESP8266", 
-                "ESP32", 
-                "ESP32-S2", 
-                "ESP32-S3", 
-                "ESP32-C2", 
-                "ESP32-C3", 
-                "ESP32-C6", 
-                "ESP32-H2",
-                "ESP32-P4"
-            ];
-
-            // 3. Create a dynamic manifest that pre-approves every chip
-            const customManifest = {
-                name: file.name,
-                version: "Local Upload",
-                // This creates a build configuration for EVERY chip in the array above
-                builds: supportedChips.map(chip => ({
-                    chipFamily: chip,
-                    parts: [
-                        { path: binUrl, offset: 0 }
-                    ]
-                }))
-            };
-
-            // 4. Convert that manifest into a temporary URL
-            const manifestBlob = new Blob([JSON.stringify(customManifest)], { type: 'application/json' });
-            const manifestUrl = URL.createObjectURL(manifestBlob);
-
-            // 5. Add this as a new project in your array
-            const customIndex = firmwareData.length;
-            firmwareData.push({
-                manifest: manifestUrl,
-                title: "Custom Firmware",
-                desc: `Ready to flash: ${file.name}`,
-                features: [
-                    "Local file upload via browser memory",
-                    "Flashed at offset 0x00",
-                    "Compatible with any merged ESP binary"
-                ]
-            });
-
-            // 6. Create a new visual card in the UI
-            const row = document.getElementById('firmwareRow');
-            const newBtn = document.createElement('div');
-            newBtn.className = 'fw';
-            newBtn.onclick = function() { selectFW(customIndex, this) };
-            newBtn.innerHTML = `
-                <div class="fw-title">📁 Custom .bin</div>
-                <div class="fw-desc">Local Upload</div>
-            `;
-            row.appendChild(newBtn);
-
-            // 7. Automatically select it for the user
-            selectFW(customIndex, newBtn);
-            
-            // Clear the file input so they can select another file later if needed
-            event.target.value = '';
-        });
-    </script>
-
+    <footer class="mt-12 py-8 border-t border-zinc-900 text-center">
+        <p class="text-zinc-600 text-xs font-mono uppercase tracking-widest">&copy; 2026 Robonavigators</p>
+    </footer>
 </body>
 </html>
