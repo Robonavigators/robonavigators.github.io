@@ -23,7 +23,7 @@
         }
 
         .container {
-            width: 700px; /* Narrowed slightly since we removed the wide cards */
+            width: 700px;
             max-width: 95%;
         }
 
@@ -63,6 +63,18 @@
             margin-bottom: 20px;
         }
 
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
         .ip-input {
             width: 100%;
             padding: 14px 16px;
@@ -90,6 +102,7 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
             display: block;
+            margin-top: 5px;
         }
 
         .ota-upload-btn:hover {
@@ -161,12 +174,25 @@
             <div class="header">
                 <div>
                     <div class="title">Robonavigators OTA Uploader</div>
-                    <div class="subtitle">Upload a compiled <strong>.bin</strong> file to your board wirelessly over your local network. Your device must already be running firmware with an active OTA web server.</div>
+                    <div class="subtitle">Upload a compiled <strong>.bin</strong> file to your board wirelessly over your local network. Credentials are optional depending on your device setup.</div>
                 </div>
             </div>
 
             <div class="ota-controls">
-                <input type="text" id="espIpAddress" class="ip-input" placeholder="Enter device IP address (e.g., 192.168.1.100)">
+                <div class="input-group">
+                    <label class="input-label" for="espIpAddress">Device IP Address *</label>
+                    <input type="text" id="espIpAddress" class="ip-input" placeholder="e.g., 192.168.1.100">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="espAuthUser">Username (Optional)</label>
+                    <input type="text" id="espAuthUser" class="ip-input" placeholder="e.g., admin" value="admin">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="espAuthPassword">Password (Optional)</label>
+                    <input type="password" id="espAuthPassword" class="ip-input" placeholder="Leave blank if unprotected">
+                </div>
                 
                 <label class="ota-upload-btn">
                     Select Compiled .bin & Update
@@ -196,6 +222,8 @@
         document.getElementById('otaFileInput').addEventListener('change', async function(event) {
             const file = event.target.files[0];
             const ipAddress = document.getElementById('espIpAddress').value.trim();
+            const username = document.getElementById('espAuthUser').value.trim();
+            const password = document.getElementById('espAuthPassword').value.trim();
             
             if (!file) return;
 
@@ -213,22 +241,36 @@
             const formData = new FormData();
             formData.append('update', file); // 'update' is the standard key expected by ESP OTA handlers
 
+            // Set up fetch request headers/options
+            const fetchOptions = {
+                method: 'POST',
+                body: formData,
+                headers: {}
+            };
+
+            // If password is typed, build a Basic Auth Header
+            if (password !== "") {
+                // Default username to 'admin' if password is filled but user left username empty
+                const finalUser = username || 'admin';
+                // Basic auth format requires a Base64 encoding of "username:password"
+                const credentials = btoa(`${finalUser}:${password}`);
+                fetchOptions.headers['Authorization'] = `Basic ${credentials}`;
+            }
+
             showStatus(`Uploading ${file.name} to ${formattedIp}... Please wait.`, 'status-loading');
 
             try {
-                // Remove no-cors to allow reading the response status if the ESP32 handles CORS properly.
-                const response = await fetch(updateUrl, {
-                    method: 'POST',
-                    body: formData
-                });
+                const response = await fetch(updateUrl, fetchOptions);
 
                 if (response.ok) {
                     showStatus('Update Successful! Your board is rebooting.', 'status-success');
+                } else if (response.status === 401) {
+                    showStatus('Update Failed: Authentication Error. Check your password.', 'status-error');
                 } else {
                     showStatus(`Update Failed: Board returned status ${response.status}`, 'status-error');
                 }
             } catch (error) {
-                showStatus(`Connection Error: Make sure the IP is correct and the board is online.`, 'status-error');
+                showStatus(`Connection Error: Make sure the IP is correct, the board is online, and CORS is allowed.`, 'status-error');
                 console.error("OTA Error:", error);
             }
 
