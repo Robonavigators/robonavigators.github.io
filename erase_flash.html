@@ -16,10 +16,9 @@
         }
         .selection-brand {
             ::selection {
-                background-color: rgba(239, 68, 68, 0.3); /* Red selection */
+                background-color: rgba(239, 68, 68, 0.3);
             }
         }
-        /* Custom scrollbar for terminal */
         .terminal-scroll::-webkit-scrollbar {
             width: 8px;
         }
@@ -122,7 +121,7 @@
                     <button id="clearLogBtn" class="text-xs font-medium text-zinc-500 hover:text-white transition-colors">Clear</button>
                 </div>
                 
-                <div id="terminal" class="p-4 h-[350px] overflow-y-auto terminal-scroll font-mono text-sm text-zinc-300 leading-relaxed">
+                <div id="terminal" class="p-4 h-[350px] overflow-y-auto terminal-scroll font-mono text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
                     <div class="text-zinc-500">Robonavigators Web Serial Utility v1.0.0</div>
                     <div class="text-zinc-500 mb-4">Waiting for device connection...</div>
                     </div>
@@ -140,7 +139,9 @@
         <p class="text-zinc-400 dark:text-zinc-600 text-xs font-mono uppercase tracking-widest">&copy; 2026 Robonavigators</p>
     </footer>
 
-    <script>
+    <script type="module">
+        import { Transport, ESPLoader } from 'https://esm.sh/esptool-js@0.5.4';
+
         // Theme Toggle Logic
         const themeToggle = document.getElementById('themeToggle');
         const htmlElement = document.documentElement;
@@ -149,16 +150,32 @@
             htmlElement.classList.toggle('dark');
         });
 
-        // Serial Logic
+        // Real Serial & Esptool Logic
         const connectBtn = document.getElementById('connectBtn');
         const terminal = document.getElementById('terminal');
         const clearLogBtn = document.getElementById('clearLogBtn');
         const baudRateSelect = document.getElementById('baudRate');
         
-        let isConnecting = false;
-        let activePort = null;
+        let isWorking = false;
+
+        // Custom terminal logger to pipe esptool-js outputs into your UI
+        const terminalLogger = {
+            clean() {
+                terminal.innerHTML = '';
+            },
+            writeLine(data) {
+                logToTerminal(data);
+            },
+            write(data) {
+                // esptool-js sometimes outputs raw text without newlines (like progress dots)
+                // We'll just append it to the last line or print it normally for simplicity
+                logToTerminal(data);
+            }
+        };
 
         function logToTerminal(message, type = 'info') {
+            if (!message.trim()) return; // Skip empty lines
+            
             const line = document.createElement('div');
             
             const now = new Date();
@@ -166,8 +183,8 @@
             
             let colorClass = 'text-zinc-300';
             if (type === 'success') colorClass = 'text-emerald-400';
-            if (type === 'error') colorClass = 'text-red-400';
-            if (type === 'warning') colorClass = 'text-orange-400';
+            if (type === 'error' || message.toLowerCase().includes('error')) colorClass = 'text-red-400';
+            if (type === 'warning' || message.toLowerCase().includes('warning')) colorClass = 'text-orange-400';
             if (type === 'system') colorClass = 'text-blue-400';
 
             line.innerHTML = `<span class="text-zinc-600 mr-2">[${time}]</span> <span class="${colorClass}">${message}</span>`;
@@ -176,15 +193,14 @@
         }
 
         clearLogBtn.addEventListener('click', () => {
-            terminal.innerHTML = '';
+            terminalLogger.clean();
             logToTerminal('Logs cleared.', 'system');
         });
 
-        // Set button to loading state
         function setButtonLoading(loading) {
             if (loading) {
                 connectBtn.disabled = true;
-                connectBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Connecting...`;
+                connectBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Erasing...`;
                 connectBtn.classList.replace('bg-red-600', 'bg-zinc-600');
                 connectBtn.classList.remove('hover:bg-red-700');
             } else {
@@ -196,54 +212,69 @@
         }
 
         connectBtn.addEventListener('click', async () => {
-            if (isConnecting) return;
+            if (isWorking) return;
             
-            // Check if browser supports Web Serial
             if (!("serial" in navigator)) {
-                logToTerminal("Error: Your browser does not support the Web Serial API. Please use Chrome, Edge, or Opera.", "error");
+                logToTerminal("Error: Your browser does not support the Web Serial API. Please use a Chromium-based browser (Chrome, Edge, Opera).", "error");
                 return;
             }
 
-            isConnecting = true;
-            setButtonLoading(true);
-            logToTerminal('Requesting serial port...', 'system');
+            isWorking = true;
+            let port;
+            let transport;
+            let esploader;
 
             try {
-                // Actually prompt the user to select a COM port
-                activePort = await navigator.serial.requestPort();
+                // 1. Request port access from the user
+                logToTerminal('Requesting serial port...', 'system');
+                port = await navigator.serial.requestPort();
                 
-                // Get selected baud rate
+                setButtonLoading(true);
                 const baudRate = parseInt(baudRateSelect.value);
-                logToTerminal(`Port selected successfully. Target baud rate: ${baudRate}`);
-                logToTerminal('Connecting to ESP32...', 'system');
                 
-                // Wait briefly for effect
-                await new Promise(r => setTimeout(r, 800));
+                // 2. Initialize Transport layer
+                transport = new Transport(port, true); // true for enable tracing/logging
                 
-                logToTerminal('Chip type: ESP32 (Simulation)');
-                logToTerminal('Uploading stub...', 'system');
+                // 3. Initialize ESPLoader
+                esploader = new ESPLoader({
+                    transport: transport,
+                    baudrate: baudRate,
+                    terminal: terminalLogger
+                });
+
+                logToTerminal('Connecting to ESP...', 'system');
                 
-                await new Promise(r => setTimeout(r, 1200));
-                logToTerminal('Stub running...', 'success');
-                logToTerminal('Erasing flash (this may take a while)...', 'warning');
+                // 4. Connect, sync, and upload stub
+                const chip = await esploader.main();
+                logToTerminal(`Successfully connected to ${chip}`, 'success');
+
+                // 5. Execute actual erase command
+                logToTerminal('Starting flash erase. This may take up to 20 seconds. Please do not disconnect...', 'warning');
+                await esploader.erase_flash();
                 
-                // Simulate erasing process
-                await new Promise(r => setTimeout(r, 3500));
-                
-                logToTerminal('Chip erase completed successfully', 'success');
-                logToTerminal('Hard resetting via RTS pin...');
-                
+                logToTerminal('Chip completely erased successfully!', 'success');
+
+                // 6. Hard reset the board so it boots into standard mode
+                logToTerminal('Hard resetting via RTS pin...', 'system');
+                await esploader.hard_reset();
+
             } catch (err) {
-                // This catches the error if the user clicks "Cancel" in the browser prompt
                 if (err.name === 'NotFoundError') {
-                    logToTerminal('Operation cancelled: No port selected by the user.', 'error');
+                    logToTerminal('Operation cancelled: No port selected.', 'error');
                 } else {
-                    logToTerminal('Error: ' + err.message, 'error');
+                    logToTerminal(`Failed: ${err.message}`, 'error');
                 }
             } finally {
-                // Always reset the button and state when done or failed
-                isConnecting = false;
-                activePort = null;
+                // Ensure the port is closed if it was opened
+                if (transport) {
+                    try {
+                        await transport.disconnect();
+                        logToTerminal('Serial port closed.', 'system');
+                    } catch (e) {
+                        console.error('Error closing port', e);
+                    }
+                }
+                isWorking = false;
                 setButtonLoading(false);
             }
         });
