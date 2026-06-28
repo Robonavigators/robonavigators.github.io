@@ -245,8 +245,8 @@
                 <strong>Note:</strong> Make sure the board is connected properly and make sure any serial port requiring application or websites is closed.
             </div>
 
-            <div class="repo-link">
-                For more information visit <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>
+            <div class="repo-link" id="repoLink">
+                For more information visit <a href="https://github.com/Robonavigators/Retro_Futuristic_Console" target="_blank">Retro_Futristic_Console</a>
             </div>
 
             <div class="footer">
@@ -261,12 +261,17 @@
             {
                 manifest: "manifest_retro.json",
                 title: "Retro_Console",
-                desc: "Installs the futurisitic Retro Console firmware.
+                // Fixed missing quote below
+                desc: "Installs the futurisitic Retro Console firmware.", 
+                // Fixed missing commas below
                 features: [
-                    "Optimized for full white 1.3inch SH1106 OLED"
-                    "Have ArduinoOTA to Flash new games"
+                    "Optimized for full white 1.3inch SH1106 OLED",
+                    "Have ArduinoOTA to Flash new games",
                     "Uses TTP223 Touch switch Module to make it futurisitic"
-                ]
+                ],
+                // Added repo link data
+                repoName: "Retro_Futristic_Console",
+                repoLink: "https://github.com/Robonavigators/Retro_Futuristic_Console"
             },
             {
                 manifest: "manifest_desk.json",
@@ -276,7 +281,10 @@
                     "Expressive eye animations",
                     "Weather data using Open Weather Map",
                     "Optimized for full white 0.96inch SSD1306 OLED"
-                ]
+                ],
+                // Added repo link data
+                repoName: "Desk_Buddy",
+                repoLink: "https://github.com/Robonavigators/Desk_Buddy"
             }
         ];
 
@@ -297,6 +305,14 @@
                 li.innerText = f;
                 ul.appendChild(li);
             });
+            
+            // Dynamic Repo Link Update
+            const repoLinkDiv = document.getElementById("repoLink");
+            if(fw.repoLink) {
+                repoLinkDiv.innerHTML = `For more information visit <a href="${fw.repoLink}" target="_blank">${fw.repoName}</a>`;
+            } else {
+                repoLinkDiv.innerHTML = `For more information visit <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>`;
+            }
         }
 
         // --- Dynamic Local File Upload Logic ---
@@ -339,7 +355,10 @@
                     "Local file upload via browser memory",
                     "Flashed at offset 0x00",
                     "Universal board support (Auto-detected)"
-                ]
+                ],
+                // Custom upload doesn't have a specific repo link, so it will fall back to main page
+                repoName: null, 
+                repoLink: null 
             });
 
             const row = document.getElementById('firmwareRow');
