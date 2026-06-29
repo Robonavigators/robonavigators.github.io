@@ -1,351 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robonavigators OTA Uploader</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robonavigators OTA Uploader</title>
 
-    <script>
-        if (localStorage.getItem('color-theme') === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            if (!localStorage.getItem('color-theme')) {
-                localStorage.setItem('color-theme', 'light');
-            }
-        }
-    </script>
+    <style>
+        :root {
+            --brand-blue: #0484f8; 
+            --brand-emerald: #10b981;
+        }
 
-    <style>
-        :root {
-            --brand-blue: #0484f8; 
-            --brand-emerald: #10b981;
-        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
 
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #eef2ff, #f8fafc);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: relative;
-        }
+        .container {
+            width: 700px;
+            max-width: 95%;
+        }
 
-        .container {
-            width: 700px;
-            max-width: 95%;
-        }
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        }
 
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
 
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
 
-        .title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+        }
 
-        .subtitle {
-            font-size: 14px;
-            color: #64748b;
-            line-height: 1.5;
-        }
+        /* --- OTA Action Area --- */
+        .ota-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #ffffff;
+            margin-bottom: 20px;
+        }
 
-        /* --- OTA Action Area --- */
-        .ota-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: #ffffff;
-            margin-bottom: 20px;
-        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
 
-        .input-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #475569;
-        }
+        .ip-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+            font-family: inherit;
+        }
 
-        .ip-input {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
-            font-family: inherit;
-        }
+        .ip-input:focus {
+            outline: none;
+            border-color: var(--brand-emerald);
+        }
 
-        .ip-input:focus {
-            outline: none;
-            border-color: var(--brand-emerald);
-        }
+        .ota-upload-btn {
+            background-color: var(--brand-emerald);
+            color: white;
+            padding: 14px 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: block;
+            margin-top: 5px;
+        }
 
-        .ota-upload-btn {
-            background-color: var(--brand-emerald);
-            color: white;
-            padding: 14px 16px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            display: block;
-            margin-top: 5px;
-        }
+        .ota-upload-btn:hover {
+            background-color: #059669;
+        }
 
-        .ota-upload-btn:hover {
-            background-color: #059669;
-        }
+        .ota-upload-btn input[type="file"] {
+            display: none;
+        }
 
-        .ota-upload-btn input[type="file"] {
-            display: none;
-        }
+        .status-message {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+            padding: 10px;
+            border-radius: 8px;
+        }
 
-        .status-message {
-            margin-top: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-            display: none;
-            padding: 10px;
-            border-radius: 8px;
-        }
+        .status-success { color: #065f46; background-color: #d1fae5; border: 1px solid #a7f3d0; }
+        .status-error { color: #991b1b; background-color: #fee2e2; border: 1px solid #fecaca; }
+        .status-loading { color: #92400e; background-color: #fef3c7; border: 1px solid #fde68a; }
+        /* ----------------------- */
 
-        .status-success { color: #065f46; background-color: #d1fae5; border: 1px solid #a7f3d0; }
-        .status-error { color: #991b1b; background-color: #fee2e2; border: 1px solid #fecaca; }
-        .status-loading { color: #92400e; background-color: #fef3c7; border: 1px solid #fde68a; }
-        /* ----------------------- */
+        /* Warning Note */
+        .warning-note {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #d97706;
+            background-color: #fffbeb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #fef3c7;
+            text-align: center;
+        }
 
-        /* Warning Note */
-        .warning-note {
-            margin-top: 15px;
-            font-size: 13px;
-            color: #d97706;
-            background-color: #fffbeb;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 1px solid #fef3c7;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
+        /* Repo Link */
+        .repo-link {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+            color: #475569;
+        }
+        
+        .repo-link a {
+            color: var(--brand-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .repo-link a:hover {
+            text-decoration: underline;
+        }
 
-        /* Repo Link */
-        .repo-link {
-            margin-top: 20px;
-            font-size: 14px;
-            text-align: center;
-            color: #475569;
-        }
-        
-        .repo-link a {
-            color: var(--brand-blue);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .repo-link a:hover {
-            text-decoration: underline;
-        }
-
-        .footer {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #94a3b8;
-            text-align: center;
-        }
-
-        /* Dark Mode Theme Sync */
-        html.dark body { background: #09090b; }
-        html.dark .card { background: #18181b; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        html.dark .title { color: #f4f4f5; }
-        html.dark .subtitle, html.dark .input-label, html.dark .repo-link, html.dark .footer { color: #a1a1aa; }
-        html.dark .ota-controls { background: #18181b; }
-        html.dark .ip-input { background-color: #27272a; border-color: #3f3f46; color: #f4f4f5; }
-        html.dark .ip-input:focus { border-color: var(--brand-emerald); }
-        html.dark .warning-note { background-color: #451a03; border-color: #78350f; color: #fde68a; }
-        
-        /* Dark Mode Status Boxes */
-        html.dark .status-success { background-color: #064e3b; border-color: #065f46; color: #a7f3d0; }
-        html.dark .status-error { background-color: #7f1d1d; border-color: #991b1b; color: #fecaca; }
-        html.dark .status-loading { background-color: #78350f; border-color: #92400e; color: #fde68a; }
-    </style>
+        .footer {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="card">
+    <div class="container">
+        <div class="card">
 
-            <div class="header" style="justify-content: space-between;">
-                <div>
-                    <div class="title">Robonavigators OTA Uploader</div>
-                    <div class="subtitle">Upload a compiled <strong>.bin</strong> file to your board wirelessly over your local network. Credentials are optional depending on your device setup.</div>
-                </div>
-                <button id="theme-toggle" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 8px; flex-shrink: 0;">
-                    <svg id="theme-toggle-light-icon" style="width: 24px; height: 24px; display: none;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
-                    </svg>
-                    <svg id="theme-toggle-dark-icon" style="width: 24px; height: 24px; display: none;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-                    </svg>
-                </button>
-            </div>
+            <div class="header">
+                <div>
+                    <div class="title">Robonavigators OTA Uploader</div>
+                    <div class="subtitle">Upload a compiled <strong>.bin</strong> file to your board wirelessly over your local network. Credentials are optional depending on your device setup.</div>
+                </div>
+            </div>
 
-            <div class="ota-controls">
-                <div class="input-group">
-                    <label class="input-label" for="espIpAddress">Device IP Address *</label>
-                    <input type="text" id="espIpAddress" class="ip-input" placeholder="e.g., 192.168.1.100">
-                </div>
+            <div class="ota-controls">
+                <div class="input-group">
+                    <label class="input-label" for="espIpAddress">Device IP Address *</label>
+                    <input type="text" id="espIpAddress" class="ip-input" placeholder="e.g., 192.168.1.100">
+                </div>
 
-                <div class="input-group">
-                    <label class="input-label" for="espAuthUser">Username (Optional)</label>
-                    <input type="text" id="espAuthUser" class="ip-input" placeholder="Leave blank if not required">
-                </div>
+                <div class="input-group">
+                    <label class="input-label" for="espAuthUser">Username (Optional)</label>
+                    <input type="text" id="espAuthUser" class="ip-input" placeholder="Leave blank if not required">
+                </div>
 
-                <div class="input-group">
-                    <label class="input-label" for="espAuthPassword">Password (Optional)</label>
-                    <input type="password" id="espAuthPassword" class="ip-input" placeholder="Leave blank if unprotected">
-                </div>
-                
-                <label class="ota-upload-btn">
-                    Select Compiled .bin & Update
-                    <input type="file" accept=".bin" id="otaFileInput">
-                </label>
+                <div class="input-group">
+                    <label class="input-label" for="espAuthPassword">Password (Optional)</label>
+                    <input type="password" id="espAuthPassword" class="ip-input" placeholder="Leave blank if unprotected">
+                </div>
+                
+                <label class="ota-upload-btn">
+                    Select Compiled .bin & Update
+                    <input type="file" accept=".bin" id="otaFileInput">
+                </label>
 
-                <div id="statusMessage" class="status-message"></div>
-            </div>
+                <div id="statusMessage" class="status-message"></div>
+            </div>
 
-            <div class="warning-note">
-                <strong>Note:</strong> Your computer and the ESP32 must be connected to the same Wi-Fi network for OTA to work.
-            </div>
+            <div class="warning-note">
+                <strong>Note:</strong> Your computer and the ESP32 must be connected to the same Wi-Fi network for OTA to work.
+            </div>
 
-            <div class="repo-link">
-                For more information visit <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>
-            </div>
+            <div class="repo-link">
+                For more information visit <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>
+            </div>
 
-            <div class="footer">
-                Ensure OTA routing (usually /update) is enabled in your device firmware
-            </div>
+            <div class="footer">
+                Ensure OTA routing (usually /update) is enabled in your device firmware
+            </div>
 
-        </div>
-    </div>
+        </div>
+    </div>
 
-    <script>
-        // --- OTA Upload Logic ---
-        document.getElementById('otaFileInput').addEventListener('change', async function(event) {
-            const file = event.target.files[0];
-            const ipAddress = document.getElementById('espIpAddress').value.trim();
-            const username = document.getElementById('espAuthUser').value.trim();
-            const password = document.getElementById('espAuthPassword').value.trim();
-            
-            if (!file) return;
+    <script>
+        // --- OTA Upload Logic ---
+        document.getElementById('otaFileInput').addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            const ipAddress = document.getElementById('espIpAddress').value.trim();
+            const username = document.getElementById('espAuthUser').value.trim();
+            const password = document.getElementById('espAuthPassword').value.trim();
+            
+            if (!file) return;
 
-            if (!ipAddress) {
-                showStatus('Please enter the ESP IP Address first.', 'status-error');
-                event.target.value = ''; // Reset file input
-                return;
-            }
+            if (!ipAddress) {
+                showStatus('Please enter the ESP IP Address first.', 'status-error');
+                event.target.value = ''; // Reset file input
+                return;
+            }
 
-            // Standard HTTP format for local IP
-            const formattedIp = ipAddress.startsWith('http') ? ipAddress : `http://${ipAddress}`;
-            // Standard route for ESP32 WebServer updates is usually /update
-            const updateUrl = `${formattedIp}/update`;
+            // Standard HTTP format for local IP
+            const formattedIp = ipAddress.startsWith('http') ? ipAddress : `http://${ipAddress}`;
+            // Standard route for ESP32 WebServer updates is usually /update
+            const updateUrl = `${formattedIp}/update`;
 
-            const formData = new FormData();
-            formData.append('update', file); // 'update' is the standard key expected by ESP OTA handlers
+            const formData = new FormData();
+            formData.append('update', file); // 'update' is the standard key expected by ESP OTA handlers
 
-            // Set up fetch request headers/options
-            const fetchOptions = {
-                method: 'POST',
-                body: formData,
-                headers: {}
-            };
+            // Set up fetch request headers/options
+            const fetchOptions = {
+                method: 'POST',
+                body: formData,
+                headers: {}
+            };
 
-            // If password is typed, build a Basic Auth Header
-            if (password !== "") {
-                // If a password is given but username is left blank, use an empty string for the username
-                const finalUser = username || "";
-                // Basic auth format requires a Base64 encoding of "username:password"
-                const credentials = btoa(`${finalUser}:${password}`);
-                fetchOptions.headers['Authorization'] = `Basic ${credentials}`;
-            }
+            // If password is typed, build a Basic Auth Header
+            if (password !== "") {
+                // If a password is given but username is left blank, use an empty string for the username
+                const finalUser = username || "";
+                // Basic auth format requires a Base64 encoding of "username:password"
+                const credentials = btoa(`${finalUser}:${password}`);
+                fetchOptions.headers['Authorization'] = `Basic ${credentials}`;
+            }
 
-            showStatus(`Uploading ${file.name} to ${formattedIp}... Please wait.`, 'status-loading');
+            showStatus(`Uploading ${file.name} to ${formattedIp}... Please wait.`, 'status-loading');
 
-            try {
-                const response = await fetch(updateUrl, fetchOptions);
+            try {
+                const response = await fetch(updateUrl, fetchOptions);
 
-                if (response.ok) {
-                    showStatus('Update Successful! Your board is rebooting.', 'status-success');
-                } else if (response.status === 401) {
-                    showStatus('Update Failed: Authentication Error. Check your password.', 'status-error');
-                } else {
-                    showStatus(`Update Failed: Board returned status ${response.status}`, 'status-error');
-                }
-            } catch (error) {
-                showStatus(`Connection Error: Make sure the IP is correct, the board is online, and CORS is allowed.`, 'status-error');
-                console.error("OTA Error:", error);
-            }
+                if (response.ok) {
+                    showStatus('Update Successful! Your board is rebooting.', 'status-success');
+                } else if (response.status === 401) {
+                    showStatus('Update Failed: Authentication Error. Check your password.', 'status-error');
+                } else {
+                    showStatus(`Update Failed: Board returned status ${response.status}`, 'status-error');
+                }
+            } catch (error) {
+                showStatus(`Connection Error: Make sure the IP is correct, the board is online, and CORS is allowed.`, 'status-error');
+                console.error("OTA Error:", error);
+            }
 
-            // Clear the file input so it can be used again
-            event.target.value = '';
-        });
+            // Clear the file input so it can be used again
+            event.target.value = '';
+        });
 
-        function showStatus(message, className) {
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.style.display = 'block';
-            statusDiv.className = `status-message ${className}`;
-            statusDiv.innerText = message;
-        }
-    </script>
-
-    <script>
-        const themeBtn = document.getElementById('theme-toggle');
-        const darkIcon = document.getElementById('theme-toggle-dark-icon');
-        const lightIcon = document.getElementById('theme-toggle-light-icon');
-
-        function updateIcons() {
-            if (document.documentElement.classList.contains('dark')) {
-                lightIcon.style.display = 'block';
-                darkIcon.style.display = 'none';
-            } else {
-                lightIcon.style.display = 'none';
-                darkIcon.style.display = 'block';
-            }
-        }
-
-        updateIcons();
-
-        themeBtn.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
-            updateIcons();
-        });
-    </script>
+        function showStatus(message, className) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.style.display = 'block';
+            statusDiv.className = `status-message ${className}`;
+            statusDiv.innerText = message;
+        }
+    </script>
 
 </body>
 </html>
