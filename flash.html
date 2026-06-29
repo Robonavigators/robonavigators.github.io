@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robonavigators ESP Flasher</title>
 
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            if (!localStorage.getItem('color-theme')) {
+                localStorage.setItem('color-theme', 'light');
+            }
+        }
+    </script>
+
     <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
 
     <style>
@@ -61,6 +72,7 @@
             border-radius: 18px;
             padding: 30px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
         }
 
         .header {
@@ -95,6 +107,7 @@
             padding: 15px;
             cursor: pointer;
             transition: all 0.2s ease;
+            background: transparent;
         }
 
         .fw:hover {
@@ -189,6 +202,7 @@
             border-radius: 8px;
             border: 1px solid #fef3c7;
             text-align: center;
+            transition: all 0.3s ease;
         }
 
         /* --- Footer & Main GitHub Link --- */
@@ -209,6 +223,19 @@
         .footer a:hover {
             color: var(--brand-blue);
         }
+
+        /* Dark Mode Theme Sync */
+        html.dark body { background: #09090b; }
+        html.dark .card { background: #18181b; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        html.dark .title, html.dark .fw-title, html.dark .info-text h2 { color: #f4f4f5; }
+        html.dark .subtitle, html.dark .fw-desc, html.dark .info-text p, html.dark .info-text ul, html.dark .repo-inline-link { color: #a1a1aa; }
+        html.dark .fw { border-color: #3f3f46; }
+        html.dark .fw:hover { border-color: #71717a; }
+        html.dark .fw.active { border-color: var(--brand-blue); background: rgba(4, 132, 248, 0.15); }
+        html.dark .info-panel { background: #27272a; border-color: #3f3f46; }
+        html.dark .warning-note { background-color: #451a03; border-color: #78350f; color: #fde68a; }
+        html.dark .footer { color: #71717a; }
+        html.dark .repo-inline-link { border-top-color: #3f3f46; }
     </style>
 </head>
 <body>
@@ -221,11 +248,19 @@
     <div class="container">
         <div class="card">
 
-            <div class="header">
+            <div class="header" style="justify-content: space-between;">
                 <div>
                     <div class="title">Robonavigators ESP Flasher</div>
                     <div class="subtitle">Select a project to flash directly via USB</div>
                 </div>
+                <button id="theme-toggle" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 8px;">
+                    <svg id="theme-toggle-light-icon" style="width: 24px; height: 24px; display: none;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+                    </svg>
+                    <svg id="theme-toggle-dark-icon" style="width: 24px; height: 24px; display: none;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                    </svg>
+                </button>
             </div>
 
             <div class="firmware-row" id="firmwareRow">
@@ -381,6 +416,31 @@
 
             selectFW(customIndex, newBtn);
             event.target.value = '';
+        });
+    </script>
+
+    <script>
+        const themeBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        function updateIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            } else {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            }
+        }
+
+        updateIcons();
+
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            updateIcons();
         });
     </script>
 
