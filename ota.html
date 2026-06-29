@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robonavigators OTA Uploader</title>
 
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            if (!localStorage.getItem('color-theme')) {
+                localStorage.setItem('color-theme', 'light');
+            }
+        }
+    </script>
+
     <style>
         :root {
             --brand-blue: #0484f8; 
@@ -32,6 +43,7 @@
             border-radius: 18px;
             padding: 30px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
         }
 
         .header {
@@ -82,7 +94,7 @@
             border: 2px solid #e2e8f0;
             border-radius: 10px;
             box-sizing: border-box;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
             font-family: inherit;
         }
 
@@ -138,6 +150,7 @@
             border-radius: 8px;
             border: 1px solid #fef3c7;
             text-align: center;
+            transition: all 0.3s ease;
         }
 
         /* Repo Link */
@@ -164,6 +177,21 @@
             color: #94a3b8;
             text-align: center;
         }
+
+        /* Dark Mode Theme Sync */
+        html.dark body { background: #09090b; }
+        html.dark .card { background: #18181b; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        html.dark .title { color: #f4f4f5; }
+        html.dark .subtitle, html.dark .input-label, html.dark .repo-link, html.dark .footer { color: #a1a1aa; }
+        html.dark .ota-controls { background: #18181b; }
+        html.dark .ip-input { background-color: #27272a; border-color: #3f3f46; color: #f4f4f5; }
+        html.dark .ip-input:focus { border-color: var(--brand-emerald); }
+        html.dark .warning-note { background-color: #451a03; border-color: #78350f; color: #fde68a; }
+        
+        /* Dark Mode Status Boxes */
+        html.dark .status-success { background-color: #064e3b; border-color: #065f46; color: #a7f3d0; }
+        html.dark .status-error { background-color: #7f1d1d; border-color: #991b1b; color: #fecaca; }
+        html.dark .status-loading { background-color: #78350f; border-color: #92400e; color: #fde68a; }
     </style>
 </head>
 <body>
@@ -171,11 +199,19 @@
     <div class="container">
         <div class="card">
 
-            <div class="header">
+            <div class="header" style="justify-content: space-between;">
                 <div>
                     <div class="title">Robonavigators OTA Uploader</div>
                     <div class="subtitle">Upload a compiled <strong>.bin</strong> file to your board wirelessly over your local network. Credentials are optional depending on your device setup.</div>
                 </div>
+                <button id="theme-toggle" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 8px; flex-shrink: 0;">
+                    <svg id="theme-toggle-light-icon" style="width: 24px; height: 24px; display: none;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+                    </svg>
+                    <svg id="theme-toggle-dark-icon" style="width: 24px; height: 24px; display: none;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                    </svg>
+                </button>
             </div>
 
             <div class="ota-controls">
@@ -284,6 +320,31 @@
             statusDiv.className = `status-message ${className}`;
             statusDiv.innerText = message;
         }
+    </script>
+
+    <script>
+        const themeBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        function updateIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            } else {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            }
+        }
+
+        updateIcons();
+
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            updateIcons();
+        });
     </script>
 
 </body>
