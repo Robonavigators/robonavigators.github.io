@@ -1,388 +1,448 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robonavigators ESP Flasher</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robonavigators ESP Flasher</title>
 
-    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            if (!localStorage.getItem('color-theme')) {
+                localStorage.setItem('color-theme', 'light');
+            }
+        }
+    </script>
 
-    <style>
-        :root {
-            --brand-blue: #0484f8; 
-            --brand-blue-light: #e6f2ff;
-        }
+    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
 
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #eef2ff, #f8fafc);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: relative;
-        }
+    <style>
+        :root {
+            --brand-blue: #0484f8; 
+            --brand-blue-light: #e6f2ff;
+        }
 
-        /* --- Custom .Bin Button --- */
-        .custom-bin-upload {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            border: 2px solid #ef4444; 
-            background-color: transparent;
-            color: #ef4444;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            display: inline-block;
-        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
 
-        .custom-bin-upload:hover {
-            background-color: #ef4444;
-            color: #ffffff;
-        }
+        /* --- Custom .Bin Button --- */
+        .custom-bin-upload {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            border: 2px solid #ef4444; 
+            background-color: transparent;
+            color: #ef4444;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
 
-        .custom-bin-upload input[type="file"] {
-            display: none;
-        }
-        /* -------------------------- */
+        .custom-bin-upload:hover {
+            background-color: #ef4444;
+            color: #ffffff;
+        }
 
-        .container {
-            width: 900px;
-            max-width: 95%;
-        }
+        .custom-bin-upload input[type="file"] {
+            display: none;
+        }
+        /* -------------------------- */
 
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
-        }
+        .container {
+            width: 900px;
+            max-width: 95%;
+        }
 
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
 
-        .title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1e293b;
-        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
 
-        .subtitle {
-            font-size: 14px;
-            color: #64748b;
-        }
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+        }
 
-        /* Firmware selection cards */
-        .firmware-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
 
-        .fw {
-            flex: 1;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+        /* Firmware selection cards */
+        .firmware-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
 
-        .fw:hover {
-            border-color: #cbd5e1;
-        }
+        .fw {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
 
-        .fw.active {
-            border-color: var(--brand-blue);
-            background: var(--brand-blue-light);
-        }
+        .fw:hover {
+            border-color: #cbd5e1;
+        }
 
-        .fw-title {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
+        .fw.active {
+            border-color: var(--brand-blue);
+            background: var(--brand-blue-light);
+        }
 
-        .fw-desc {
-            font-size: 13px;
-            color: #64748b;
-        }
+        .fw-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
 
-        /* Info panel */
-        .info-panel {
-            margin-bottom: 25px;
-            background: #f8fafc;
-            padding: 20px 25px;
-            border-radius: 12px;
-            border: 1px solid #f1f5f9;
-        }
+        .fw-desc {
+            font-size: 13px;
+            color: #64748b;
+        }
 
-        .info-text h2 {
-            margin: 0 0 10px 0;
-            color: #1e293b;
-            font-size: 20px;
-        }
+        /* Info panel */
+        .info-panel {
+            margin-bottom: 25px;
+            background: #f8fafc;
+            padding: 20px 25px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+        }
 
-        .info-text p {
-            font-size: 14px;
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            word-wrap: break-word;
-        }
+        .info-text h2 {
+            margin: 0 0 10px 0;
+            color: #1e293b;
+            font-size: 20px;
+        }
 
-        .info-text ul {
-            font-size: 13px;
-            color: #475569;
-            padding-left: 20px;
-            margin: 0;
-        }
-        
-        .info-text li {
-            margin-bottom: 6px;
-        }
+        .info-text p {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
 
-        /* --- Inline Repo Link inside Intro --- */
-        .repo-inline-link {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #475569;
-            padding-top: 15px;
-            border-top: 1px dashed #cbd5e1;
-        }
-        
-        .repo-inline-link a {
-            color: var(--brand-blue);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .repo-inline-link a:hover {
-            text-decoration: underline;
-        }
+        .info-text ul {
+            font-size: 13px;
+            color: #475569;
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        .info-text li {
+            margin-bottom: 6px;
+        }
 
-        /* Install button */
-        esp-web-install-button {
-            --esp-web-install-button-color: var(--brand-blue);
-            --esp-web-install-button-text-color: #ffffff;
-            --esp-web-install-button-border-radius: 10px;
-            width: 100%;
-            display: block;
-        }
+        /* --- Inline Repo Link inside Intro --- */
+        .repo-inline-link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #475569;
+            padding-top: 15px;
+            border-top: 1px dashed #cbd5e1;
+        }
+        
+        .repo-inline-link a {
+            color: var(--brand-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .repo-inline-link a:hover {
+            text-decoration: underline;
+        }
 
-        /* Warning Note */
-        .warning-note {
-            margin-top: 15px;
-            font-size: 13px;
-            color: #d97706;
-            background-color: #fffbeb;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 1px solid #fef3c7;
-            text-align: center;
-        }
+        /* Install button */
+        esp-web-install-button {
+            --esp-web-install-button-color: var(--brand-blue);
+            --esp-web-install-button-text-color: #ffffff;
+            --esp-web-install-button-border-radius: 10px;
+            width: 100%;
+            display: block;
+        }
 
-        /* --- Footer & Main GitHub Link --- */
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #94a3b8;
-            text-align: center;
-            line-height: 1.8;
-        }
+        /* Warning Note */
+        .warning-note {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #d97706;
+            background-color: #fffbeb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #fef3c7;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
 
-        .footer a {
-            color: #64748b;
-            text-decoration: underline;
-            font-weight: 500;
-        }
+        /* --- Footer & Main GitHub Link --- */
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+            line-height: 1.8;
+        }
 
-        .footer a:hover {
-            color: var(--brand-blue);
-        }
-    </style>
+        .footer a {
+            color: #64748b;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            color: var(--brand-blue);
+        }
+
+        /* Dark Mode Theme Sync */
+        html.dark body { background: #09090b; }
+        html.dark .card { background: #18181b; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        html.dark .title, html.dark .fw-title, html.dark .info-text h2 { color: #f4f4f5; }
+        html.dark .subtitle, html.dark .fw-desc, html.dark .info-text p, html.dark .info-text ul, html.dark .repo-inline-link { color: #a1a1aa; }
+        html.dark .fw { border-color: #3f3f46; }
+        html.dark .fw:hover { border-color: #71717a; }
+        html.dark .fw.active { border-color: var(--brand-blue); background: rgba(4, 132, 248, 0.15); }
+        html.dark .info-panel { background: #27272a; border-color: #3f3f46; }
+        html.dark .warning-note { background-color: #451a03; border-color: #78350f; color: #fde68a; }
+        html.dark .footer { color: #71717a; }
+        html.dark .repo-inline-link { border-top-color: #3f3f46; }
+    </style>
 </head>
 <body>
 
-    <label class="custom-bin-upload">
-        Add your own .bin
-        <input type="file" accept=".bin" id="customFileInput">
-    </label>
+    <label class="custom-bin-upload">
+        Add your own .bin
+        <input type="file" accept=".bin" id="customFileInput">
+    </label>
 
-    <div class="container">
-        <div class="card">
+    <div class="container">
+        <div class="card">
 
-            <div class="header">
-                <div>
-                    <div class="title">Robonavigators ESP Flasher</div>
-                    <div class="subtitle">Select a project to flash directly via USB</div>
-                </div>
-            </div>
+            <div class="header" style="justify-content: space-between;">
+                <div>
+                    <div class="title">Robonavigators ESP Flasher</div>
+                    <div class="subtitle">Select a project to flash directly via USB</div>
+                </div>
+                <button id="theme-toggle" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 8px;">
+                    <svg id="theme-toggle-light-icon" style="width: 24px; height: 24px; display: none;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+                    </svg>
+                    <svg id="theme-toggle-dark-icon" style="width: 24px; height: 24px; display: none;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                    </svg>
+                </button>
+            </div>
 
-            <div class="firmware-row" id="firmwareRow">
-                <div class="fw active" onclick="selectFW(0, this)">
-                    <div class="fw-title">Retro_Console</div>
-                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
-                </div>
+            <div class="firmware-row" id="firmwareRow">
+                <div class="fw active" onclick="selectFW(0, this)">
+                    <div class="fw-title">Retro_Console</div>
+                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
+                </div>
 
-                <div class="fw" onclick="selectFW(1, this)">
-                    <div class="fw-title">Desk_Buddy</div>
-                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
-                </div>
-            </div>
+                <div class="fw" onclick="selectFW(1, this)">
+                    <div class="fw-title">Desk_Buddy</div>
+                    <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
+                </div>
+            </div>
 
-            <div class="info-panel">
-                <div class="info-text">
-                    <h2 id="fwTitle">Retro_Console</h2>
-                    <p id="fwDesc">Installs the futuristic Retro Console firmware.</p>
-                    <ul id="fwFeatures">
-                        <li>Optimized for full white 1.3inch SH1106 OLED</li>
-                        <li>Have ArduinoOTA to Flash new games</li>
-                        <li>Uses TTP223 Touch switch Module to make it futurisitic</li>
-                    </ul>
-                    
-                    <div class="repo-inline-link" id="repoLink">
-                        For more information visit <a href="https://github.com/Robonavigators/Retro_Futuristic_Console" target="_blank">Retro_Futristic_Console</a>
-                    </div>
-                </div>
-            </div>
+            <div class="info-panel">
+                <div class="info-text">
+                    <h2 id="fwTitle">Retro_Console</h2>
+                    <p id="fwDesc">Installs the futuristic Retro Console firmware.</p>
+                    <ul id="fwFeatures">
+                        <li>Optimized for full white 1.3inch SH1106 OLED</li>
+                        <li>Have ArduinoOTA to Flash new games</li>
+                        <li>Uses TTP223 Touch switch Module to make it futurisitic</li>
+                    </ul>
+                    
+                    <div class="repo-inline-link" id="repoLink">
+                        For more information visit <a href="https://github.com/Robonavigators/Retro_Futuristic_Console" target="_blank">Retro_Futristic_Console</a>
+                    </div>
+                </div>
+            </div>
 
-            <esp-web-install-button id="installBtn" manifest="manifest_retro.json"></esp-web-install-button>
+            <esp-web-install-button id="installBtn" manifest="manifest_retro.json"></esp-web-install-button>
 
-            <div class="warning-note">
-                <strong>Note:</strong> Make sure the board is connected properly and make sure any serial port requiring application or websites is closed.
-            </div>
+            <div class="warning-note">
+                <strong>Note:</strong> Make sure the board is connected properly and make sure any serial port requiring application or websites is closed.
+            </div>
 
-            <div class="footer">
-                Chrome, Edge browser required • Flash at your own risk <br>
-                For more general information visit the <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>
-            </div>
+            <div class="footer">
+                Chrome, Edge browser required • Flash at your own risk <br>
+                For more general information visit the <a href="https://github.com/Robonavigators/robonavigators.github.io/blob/main/README.md" target="_blank">Robonavigators Github Page</a>
+            </div>
 
-        </div>
-    </div>
+        </div>
+    </div>
 
-    <script>
-        const firmwareData = [
-            {
-                manifest: "manifest_retro.json",
-                title: "Retro_Console",
-                desc: "Installs the futurisitic Retro Console firmware.", 
-                features: [
-                    "Optimized for full white 1.3inch SH1106 OLED",
-                    "Have ArduinoOTA to Flash new games",
-                    "Uses TTP223 Touch switch Module to make it futurisitic"
-                ],
-                repoName: "Retro_Futristic_Console",
-                repoLink: "https://github.com/Robonavigators/Retro_Futuristic_Console"
-            },
-            {
-                manifest: "manifest_desk.json",
-                title: "Desk_Buddy",
-                desc: "Installs the interactive Desk Buddy firmware. Turns your board into an interactive companion.",
-                features: [
-                    "Expressive eye animations",
-                    "Weather data using Open Weather Map",
-                    "Optimized for 1.8in SPI TFT"
-                ],
-                repoName: "Desk_Buddy",
-                repoLink: "https://github.com/Robonavigators/Desk_Buddy"
-            }
-        ];
+    <script>
+        const firmwareData = [
+            {
+                manifest: "manifest_retro.json",
+                title: "Retro_Console",
+                desc: "Installs the futurisitic Retro Console firmware.", 
+                features: [
+                    "Optimized for full white 1.3inch SH1106 OLED",
+                    "Have ArduinoOTA to Flash new games",
+                    "Uses TTP223 Touch switch Module to make it futurisitic"
+                ],
+                repoName: "Retro_Futristic_Console",
+                repoLink: "https://github.com/Robonavigators/Retro_Futuristic_Console"
+            },
+            {
+                manifest: "manifest_desk.json",
+                title: "Desk_Buddy",
+                desc: "Installs the interactive Desk Buddy firmware. Turns your board into an interactive companion.",
+                features: [
+                    "Expressive eye animations",
+                    "Weather data using Open Weather Map",
+                    "Optimized for 1.8in SPI TFT"
+                ],
+                repoName: "Desk_Buddy",
+                repoLink: "https://github.com/Robonavigators/Desk_Buddy"
+            }
+        ];
 
-        function selectFW(index, el) {
-            document.querySelectorAll('.fw').forEach(f => f.classList.remove('active'));
-            el.classList.add('active');
+        function selectFW(index, el) {
+            document.querySelectorAll('.fw').forEach(f => f.classList.remove('active'));
+            el.classList.add('active');
 
-            const fw = firmwareData[index];
+            const fw = firmwareData[index];
 
-            document.getElementById("installBtn").setAttribute("manifest", fw.manifest);
-            document.getElementById("fwTitle").innerText = fw.title;
-            document.getElementById("fwDesc").innerText = fw.desc;
+            document.getElementById("installBtn").setAttribute("manifest", fw.manifest);
+            document.getElementById("fwTitle").innerText = fw.title;
+            document.getElementById("fwDesc").innerText = fw.desc;
 
-            const ul = document.getElementById("fwFeatures");
-            ul.innerHTML = "";
-            fw.features.forEach(f => {
-                const li = document.createElement("li");
-                li.innerText = f;
-                ul.appendChild(li);
-            });
-            
-            // Dynamic Repo Link Update inside the info panel
-            const repoLinkDiv = document.getElementById("repoLink");
-            if (fw.repoLink) {
-                repoLinkDiv.style.display = "block";
-                repoLinkDiv.innerHTML = `For more information visit <a href="${fw.repoLink}" target="_blank">${fw.repoName}</a>`;
-            } else {
-                repoLinkDiv.style.display = "none";
-            }
-        }
+            const ul = document.getElementById("fwFeatures");
+            ul.innerHTML = "";
+            fw.features.forEach(f => {
+                const li = document.createElement("li");
+                li.innerText = f;
+                ul.appendChild(li);
+            });
+            
+            // Dynamic Repo Link Update inside the info panel
+            const repoLinkDiv = document.getElementById("repoLink");
+            if (fw.repoLink) {
+                repoLinkDiv.style.display = "block";
+                repoLinkDiv.innerHTML = `For more information visit <a href="${fw.repoLink}" target="_blank">${fw.repoName}</a>`;
+            } else {
+                repoLinkDiv.style.display = "none";
+            }
+        }
 
-        // --- Dynamic Local File Upload Logic ---
-        document.getElementById('customFileInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        // --- Dynamic Local File Upload Logic ---
+        document.getElementById('customFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-            const binUrl = URL.createObjectURL(file);
+            const binUrl = URL.createObjectURL(file);
 
-            const supportedChips = [
-                "ESP8266", "ESP32", "ESP32-S2", "ESP32-S3", 
-                "ESP32-C2", "ESP32-C3", "ESP32-C5", "ESP32-C6", "ESP32-H2",
-                "ESP32-P4"
-            ];
+            const supportedChips = [
+                "ESP8266", "ESP32", "ESP32-S2", "ESP32-S3", 
+                "ESP32-C2", "ESP32-C3", "ESP32-C5", "ESP32-C6", "ESP32-H2",
+                "ESP32-P4"
+            ];
 
-            const multiBoardBuilds = supportedChips.map(chip => ({
-                chipFamily: chip,
-                parts: [
-                    { path: binUrl, offset: 0 } 
-                ]
-            }));
+            const multiBoardBuilds = supportedChips.map(chip => ({
+                chipFamily: chip,
+                parts: [
+                    { path: binUrl, offset: 0 } 
+                ]
+            }));
 
-            const customManifest = {
-                name: file.name,
-                version: "Local Upload",
-                builds: multiBoardBuilds
-            };
+            const customManifest = {
+                name: file.name,
+                version: "Local Upload",
+                builds: multiBoardBuilds
+            };
 
-            const manifestBlob = new Blob([JSON.stringify(customManifest)], { type: 'application/json' });
-            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const manifestBlob = new Blob([JSON.stringify(customManifest)], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
 
-            const customIndex = firmwareData.length;
-            firmwareData.push({
-                manifest: manifestUrl,
-                title: "Custom Firmware",
-                desc: `Ready to flash: ${file.name}`,
-                features: [
-                    "Local file upload via browser memory",
-                    "Flashed at offset 0x00",
-                    "Universal board support (Auto-detected)"
-                ],
-                repoName: null, 
-                repoLink: null 
-            });
+            const customIndex = firmwareData.length;
+            firmwareData.push({
+                manifest: manifestUrl,
+                title: "Custom Firmware",
+                desc: `Ready to flash: ${file.name}`,
+                features: [
+                    "Local file upload via browser memory",
+                    "Flashed at offset 0x00",
+                    "Universal board support (Auto-detected)"
+                ],
+                repoName: null, 
+                repoLink: null 
+            });
 
-            const row = document.getElementById('firmwareRow');
-            const newBtn = document.createElement('div');
-            newBtn.className = 'fw';
-            newBtn.onclick = function() { selectFW(customIndex, this) };
-            newBtn.innerHTML = `
-                <div class="fw-title">📁 Custom .bin</div>
-                <div class="fw-desc">Local Upload</div>
-            `;
-            row.appendChild(newBtn);
+            const row = document.getElementById('firmwareRow');
+            const newBtn = document.createElement('div');
+            newBtn.className = 'fw';
+            newBtn.onclick = function() { selectFW(customIndex, this) };
+            newBtn.innerHTML = `
+                <div class="fw-title">📁 Custom .bin</div>
+                <div class="fw-desc">Local Upload</div>
+            `;
+            row.appendChild(newBtn);
 
-            selectFW(customIndex, newBtn);
-            event.target.value = '';
-        });
-    </script>
+            selectFW(customIndex, newBtn);
+            event.target.value = '';
+        });
+    </script>
+
+    <script>
+        const themeBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        function updateIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            } else {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            }
+        }
+
+        updateIcons();
+
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            updateIcons();
+        });
+    </script>
 
 </body>
 </html>
