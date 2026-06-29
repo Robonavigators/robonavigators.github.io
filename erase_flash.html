@@ -47,24 +47,29 @@
             transition: all 0.3s ease;
         }
 
+        /* --- Header & Title Sizing --- */
         .header {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            justify-content: space-between;
             gap: 15px;
             margin-bottom: 25px;
+            min-height: 85px; /* Freezes the height so the cards don't shrink/grow */
         }
 
         .title {
             font-size: 24px;
             font-weight: 600;
             color: #1e293b;
+            margin-bottom: 4px;
         }
 
         .subtitle {
             font-size: 14px;
             color: #64748b;
-            margin-top: 4px;
+            line-height: 1.5;
         }
+        /* ----------------------------- */
 
         /* Controls Area */
         .controls-row {
