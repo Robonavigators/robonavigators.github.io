@@ -99,10 +99,12 @@
             display: flex;
             gap: 15px;
             margin-bottom: 25px;
+            flex-wrap: wrap;
         }
 
         .fw {
             flex: 1;
+            min-width: 200px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             padding: 15px;
@@ -274,6 +276,11 @@
                     <div class="fw-title">Desk_Buddy</div>
                     <div class="fw-desc">Board type: Waveshare ESP32-C3 Zero</div>
                 </div>
+
+                <div class="fw" onclick="selectFW(2, this)">
+                    <div class="fw-title">Willow</div>
+                    <div class="fw-desc">Board type: Seeed Studio XIAO ESP32-S3 N8R8</div>
+                </div>
             </div>
 
             <div class="info-panel">
@@ -331,6 +338,18 @@
                 ],
                 repoName: "Desk_Buddy",
                 repoLink: "https://github.com/Robonavigators/Desk_Buddy"
+            },
+            {
+                manifest: "manifest_willow.json",
+                title: "Willow",
+                desc: "Installs the Willow firmware, built on Xiaozhi, for the Seeed Studio XIAO ESP32-S3 N8R8.",
+                features: [
+                    "Board: Seeed Studio XIAO ESP32-S3 N8R8",
+                    "Built on the Xiaozhi AI voice assistant platform",
+                    "8MB PSRAM / 8MB Flash for on-device AI workloads"
+                ],
+                repoName: "Willow",
+                repoLink: null
             }
         ];
 
